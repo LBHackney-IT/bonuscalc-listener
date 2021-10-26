@@ -1,11 +1,11 @@
 version: "3.2"
 
 services:
-  base-listener:
-    image: base-listener
+  bonus-calc-listener:
+    image: bonus-calc-listener
     build:
       context: .
-      dockerfile: BaseListener/Dockerfile
+      dockerfile: BonusCalcListener/Dockerfile
       args:
         - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
     ports:
@@ -21,11 +21,11 @@ services:
     links:
       - dynamodb-database
 
-  base-listener-test:
-    image: base-listener-test
+  bonus-calc-listener-test:
+    image: bonus-calc-listener-test
     build:
       context: .
-      dockerfile: BaseListener.Tests/Dockerfile
+      dockerfile: BonusCalcListener.Tests/Dockerfile
       args:
         - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
     environment:
