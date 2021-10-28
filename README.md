@@ -1,60 +1,13 @@
-# LBH Base Listener
+# BonusCalc listener
 
-Base Listener is a boilerplate template application for creating for new Listener applications for LBH
+This component will listen for messages regarding work order updating and completion and persist them to the relevant store - BonusCalc DB in the first instance
 
 ## Stack
 
 - .NET Core as a web framework.
-- xUnit as a test framework.
+- NUnit as a test framework.
 
 ## Contributing
-
-### Setup
-
-1. Install [Docker][docker-download].
-2. Install [AWS CLI][AWS-CLI].
-3. Clone this repository.
-4. Rename the initial template.
-5. Open it in your IDE.
-
-### Renaming
-
-The renaming of `BonusCalcListener` into `SomethingElseListener` can be done by running a Renamer powershell script. To do so:
-1. Open the powershell and navigate to this directory's root.
-2. Run the script using the following command:
-```
-.\Renamer.ps1 -name SomethingElseListener -alternateName something-else-listener
-```
-
-The `name` value is the name of the Listener and will be used is the Project names.
-The `alternateName` value is the lower case name used in docker compose and for various behind-the-scenes file names.
-
-If your ***script execution policy*** prevents you from running the script, you can temporarily ***bypass*** that with:
-```
-powershell -noprofile -ExecutionPolicy Bypass -file .\Renamer.ps1 -name SomethingElseListener -alternateName something-else-listener
-```
-
-Or you can change your execution policy, prior to running the script, permanently with _(this disables security so, be cautious)_:
-```
-Set-ExecutionPolicy Unrestricted
-```
-
-After the renaming is done, the ***script will ask you if you want to delete it as well***, as it's useless now - It's your choice.
-
-#### On OSX
-
-Use Docker to run this script on Macs:
-```
-docker run -it -v `pwd`:/app mcr.microsoft.com/powershell
-```
-
-#### On *nix
-
-Run the renamer.sh bash script from the project root:
-```
-./rename.sh MyApiName
-```
-Ideally you should provide a script argument in PascalCase as in the example. The script will rename all instances of base api without changing the original casing.
 
 ### Development
 
@@ -62,29 +15,6 @@ To serve the application, run it using your IDE of choice, we use Visual Studio 
 
 **Note**
 When running locally the appropriate database conneciton details are still needed.
-
-##### DynamoDb
-To use a local instance of DynamoDb, this will need to be installed. This is most easily done using [Docker](https://www.docker.com/products/docker-desktop).
-Run the following command, specifying the local path where you want the container's shared volume to be stored.
-```
-docker run --name dynamodb-local -p 8000:8000 -v <PUT YOUR LOCAL PATH HERE>:/data/ amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath /data
-```
-
-If you would like to see what is in your local DynamoDb instance using a simple gui, then [this admin tool](https://github.com/aaronshaf/dynamodb-admin) can do that.
-
-The application can also be served locally using docker:
-1.  Add you security credentials to AWS CLI.
-```sh
-$ aws configure
-```
-2. Log into AWS ECR.
-```sh
-$ aws ecr get-login --no-include-email
-```
-3. Build and serve the application. It will be available in the port 3000.
-```sh
-$ make build && make serve
-```
 
 ### Release process
 
@@ -94,7 +24,7 @@ We use a pull request workflow, where changes are made on a branch and approved 
 
 Then we have an automated six step deployment process, which runs in CircleCI.
 
-1. Automated tests (xUnit) are run to ensure the release is of good quality.
+1. Automated tests (NUnit) are run to ensure the release is of good quality.
 2. The application is deployed to development automatically, where we check our latest changes work well.
 3. We manually confirm a staging deployment in the CircleCI workflow once we're happy with our changes in development.
 4. The application is deployed to staging.
@@ -129,7 +59,7 @@ $ make test
 ```
 
 ### Agreed Testing Approach
-- Use xUnit, FluentAssertions and Moq
+- Use NUnit, FluentAssertions and Moq
 - Always follow a TDD approach
 - Tests should be independent of each other
 - Gateway tests should interact with a real test instance of the database
@@ -153,9 +83,7 @@ $ make test
 
 ### Active Maintainers
 
-- **Selwyn Preston**, Lead Developer at London Borough of Hackney (selwyn.preston@hackney.gov.uk)
-- **Mirela Georgieva**, Lead Developer at London Borough of Hackney (mirela.georgieva@hackney.gov.uk)
-- **Matt Keyworth**, Lead Developer at London Borough of Hackney (matthew.keyworth@hackney.gov.uk)
+- **Dave Dean**, Lead Developer at London Borough of Hackney (david.dean@hackney.gov.uk)
 
 ### Other Contacts
 
