@@ -1,6 +1,6 @@
 # BonusCalc listener
 
-This component will listen for messages regarding work order updaing and completion and persist them to the relevant store - BonusCalc DB in the first instance
+This component will listen for messages regarding work order updating and completion and persist them to the relevant store - BonusCalc DB in the first instance
 
 ## Stack
 
