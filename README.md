@@ -83,7 +83,7 @@ $ make test
 
 ### Active Maintainers
 
-- **Dave Dean**, Lead Developer at London Borough of Hackney (selwyn.preston@hackney.gov.uk)
+- **Dave Dean**, Lead Developer at London Borough of Hackney (david.dean@hackney.gov.uk)
 
 ### Other Contacts
 
