@@ -5,7 +5,6 @@ using BonusCalcListener.Gateway;
 using BonusCalcListener.Gateway.Interfaces;
 using BonusCalcListener.UseCase;
 using BonusCalcListener.UseCase.Interfaces;
-using Hackney.Core.DynamoDb;
 using Hackney.Core.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -39,12 +38,11 @@ namespace BonusCalcListener
         /// <param name="services"></param>
         protected override void ConfigureServices(IServiceCollection services)
         {
-            services.ConfigureDynamoDB();
 
             services.AddHttpClient();
             services.AddScoped<IDoSomethingUseCase, DoSomethingUseCase>();
 
-            services.AddScoped<IDbEntityGateway, DynamoDbEntityGateway>();
+            // TODO: replace with Postgres services.AddScoped<IDbEntityGateway, DynamoDbEntityGateway>();
 
             base.ConfigureServices(services);
         }

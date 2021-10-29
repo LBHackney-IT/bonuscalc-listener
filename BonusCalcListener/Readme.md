@@ -6,7 +6,7 @@ The BonusCalcListener application provides a template for creating for new Liste
 These are the default assumptions the template project code makes.
 
 * The trigger is done via an SQS message
-* The application uses a DynamoDb datastore
+* The listener saves data to the BonusCalc Postgres datastore
 
 Of course if any of these assumption do not fit the actual intended purpose (using a different trigger or a different datastore)
 then that can be easily changed to suit each use case.
@@ -86,13 +86,6 @@ This should have been created be the service that published the events in the fi
 * A subscription to get the SNS topic to send events to this application's queue.
 * A policy the will permit the SNS topic to send events to this application's queue.
 * A Parameter store parameter that will contain the arn of the created SQS queue. (This is then used by [`Serverless.yml`](#Serverlessyml).)
-
-**Notes:**
-
-* The DynamoDb database is not set up here. It is assumed that a listener is acting on an existing datastore that has already been created by
-a different application. As a result it is assumed that the DynamoDb database will already have been created elsewhere,
-* The `variable.tf` file for each environment defines the `project_name` variable. This must be updated to the appropriate project name.,
-
 
 ## CircleCi
 This is the same as that used by the base api template.
