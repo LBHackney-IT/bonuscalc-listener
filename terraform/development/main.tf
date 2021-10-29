@@ -38,19 +38,19 @@ terraform {
   }
 }
 
-### TODO - Replace all instances of SOME-SOURCE-DOMAIN and THIS_DOMAIN (in lower case) with the domains required below.
+### TODO - Replace all instances of repairs and repairs (in lower case) with the domains required below.
 
 ### This is the parameter containing the arn of the topic to which we want to subscribe
 ### This will have been created by the service the generates the events in which we are interested
 #
-# data "aws_ssm_parameter" "SOME-SOURCE-DOMAIN_sns_topic_arn" {
-#   name = "/sns-topic/development/SOME-SOURCE-DOMAIN/arn"
+# data "aws_ssm_parameter" "repairs_sns_topic_arn" {
+#   name = "/sns-topic/development/repairs/arn"
 # }
 
 ### This is the definition of the dead letter queue used whem message processsing fails for a given message
 #
-# resource "aws_sqs_queue" "THIS_DOMAIN_dead_letter_queue" {
-#   name                        = "THIS_DOMAINdeadletterqueue.fifo"
+# resource "aws_sqs_queue" "repairs_dead_letter_queue" {
+#   name                        = "repairsdeadletterqueue.fifo"
 #   fifo_queue                  = true
 #   content_based_deduplication = true
 #   kms_master_key_id           = "alias/housing-development-cmk"
@@ -60,22 +60,22 @@ terraform {
 ### This is the queue  which will receive the events published to the topic listed above
 ### This is what the listener lambda function will get triggered by.
 #
-# resource "aws_sqs_queue" "THIS_DOMAIN_queue" {
-#   name                        = "THIS_DOMAINqueue.fifo"
+# resource "aws_sqs_queue" "repairs_queue" {
+#   name                        = "repairsqueue.fifo"
 #   fifo_queue                  = true
 #   content_based_deduplication = true
 #   kms_master_key_id           = "alias/housing-development-cmk"           # This is a custom key
 #   kms_data_key_reuse_period_seconds = 300
 #   redrive_policy              = jsonencode({
-#     deadLetterTargetArn = aws_sqs_queue.THIS_DOMAIN_dead_letter_queue.arn,
+#     deadLetterTargetArn = aws_sqs_queue.repairs_dead_letter_queue.arn,
 #     maxReceiveCount     = 3                                               # Messages that fail processing are retried twice before being moved to the dead letter queue
 #   })
 # }
 
 ### This is the AWS policy that allows the topic to forward an event to the queue declared above
 # 
-# resource "aws_sqs_queue_policy" "THIS_DOMAIN_queue_policy" {
-#   queue_url = aws_sqs_queue.THIS_DOMAIN_queue.id
+# resource "aws_sqs_queue_policy" "repairs_queue_policy" {
+#   queue_url = aws_sqs_queue.repairs_queue.id
 #   policy = <<POLICY
 #   {
 #       "Version": "2012-10-17",
@@ -86,10 +86,10 @@ terraform {
 #           "Effect": "Allow",
 #           "Principal": "*",
 #           "Action": "sqs:SendMessage",
-#           "Resource": "${aws_sqs_queue.THIS_DOMAIN_queue.arn}",
+#           "Resource": "${aws_sqs_queue.repairs_queue.arn}",
 #           "Condition": {
 #           "ArnEquals": {
-#               "aws:SourceArn": "${data.aws_ssm_parameter.SOME-SOURCE-DOMAIN_sns_topic_arn.value}"
+#               "aws:SourceArn": "${data.aws_ssm_parameter.repairs_sns_topic_arn.value}"
 #           }
 #           }
 #       }
@@ -100,18 +100,18 @@ terraform {
 
 ### This is the subscription definition that tells the topic which queue to use
 # 
-# resource "aws_sns_topic_subscription" "THIS_DOMAIN_queue_subscribe_to_SOME-SOURCE-DOMAIN_sns" {
-#   topic_arn = data.aws_ssm_parameter.SOME-SOURCE-DOMAIN_sns_topic_arn.value
+# resource "aws_sns_topic_subscription" "repairs_queue_subscribe_to_repairs_sns" {
+#   topic_arn = data.aws_ssm_parameter.repairs_sns_topic_arn.value
 #   protocol  = "sqs"
-#   endpoint  = aws_sqs_queue.THIS_DOMAIN_queue.arn
+#   endpoint  = aws_sqs_queue.repairs_queue.arn
 #   raw_message_delivery = true
 # }
 
 ### This creates an AWS parameter with arn of the queue that will then be used within the Serverless.yml
 ### to specify the queue that will trigger the lambda function.
 # 
-# resource "aws_ssm_parameter" "THIS_DOMAIN_sqs_queue_arn" {
-#   name  = "/sqs-queue/development/THIS_DOMAIN/arn"
+# resource "aws_ssm_parameter" "repairs_sqs_queue_arn" {
+#   name  = "/sqs-queue/development/repairs/arn"
 #   type  = "String"
-#   value = aws_sqs_queue.THIS_DOMAIN_queue.arn
+#   value = aws_sqs_queue.repairs_queue.arn
 # }
