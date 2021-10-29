@@ -21,7 +21,6 @@ This is the test project for the BonusCalcListener application.
 - Optimise when test run speed starts to hinder development
 - Unit tests and E2E tests should run in CI
 - Test database schemas should match up with production database schema
-- Have integration tests which test from the DynamoDb database to API Gateway
 
 ## Logging
 The listener application makes use of `[LogCall]` attributes to provide automatic function level logging.
@@ -51,42 +50,6 @@ LogCallAspectServices.GetInstance(Type type)
 DoSomethingUseCase.__a$_initialize_aspects()
 DoSomethingUseCase.ctor(IDbEntityGateway gateway) line 16
 DoSomethingUseCaseTests.ctor() line 31
-```
-
-## Gateway & E2E DynamoDb setup
-
-In order to create valid tests that use an actual DynamoDb table2 things are needed:
-- A running local instance of DynamoDb. (The docker compose file creates one for you.)
-- The required table (and indexes if needed) created.
-
-To facilitate this there are 2 helper classes:
-- `MockApplicationFactory`
-  - This class creates an application host for the listener application on the fly, sets up the necessary DI container.
-- `DynamoDbFixture`
-  - This class:
-    - It sets up any necessary environment variables required to start the application host.
-    - It contains a definition of the DynamoDb table(s) required. This should be exactly how the table will be configured withiin the AWS environments.
-    - Using the `MockApplicationFactory` it starts creates and starts the application host, ensuring the DynamoDb table definied actually exists in the local instance.
-    - Ensures that the [`LogCallAspectFixture`](#Logging) is also set up.
-
-### Usage
-All of this is then encapsulated in an xUnit collection with the name `DynamoDb collection`.
-This collection should be used to decorate the DymanoDb gateway test class and any E2E test class.
-```
-[Collection("DynamoDb collection")]
-public class DynamoDbEntityGatewayTests : IDisposable
-{
-}
-```
-- The test class must implement the IDisposable pattern.
-- The tests class is passed the `DynamoDbFixture` instance. 
-It holds a `IDynamoDBContext` instance that can be used to both construct the class under test and directly add/remove database records as needed.
-```
-public DynamoDbEntityGatewayTests(DynamoDbFixture dbTestFixture)
-{
-    _dbTestFixture = dbTestFixture;
-    _classUnderTest = new DynamoDbEntityGateway(_dbTestFixture.DynamoDbContext, _logger.Object);
-}
 ```
 
 ## E2E Tests
