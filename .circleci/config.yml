@@ -80,6 +80,7 @@ commands:
           name: Build lambda
           command: |
             cd ./BonusCalcListener/
+            ls
             chmod +x ./build.sh
             ./build.sh
       - run:
