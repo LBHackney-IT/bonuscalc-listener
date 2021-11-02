@@ -178,7 +178,6 @@ workflows:
             branches:
               only: master
       - deploy-to-development:
-          context: api-assume-role-housing-development-context
           requires:
             - terraform-init-and-apply-to-development
           filters:
@@ -186,10 +185,7 @@ workflows:
               only: master
   check-and-deploy-staging-and-production:
       jobs:
-      - check-code-formatting:
-          filters:
-            branches:
-              only: release
+      - check-code-formatting
       - build-and-test:
           filters:
             branches:
@@ -217,9 +213,6 @@ workflows:
           type: approval
           requires:
             - deploy-to-staging
-          filters:
-            branches:
-              only: release
       - assume-role-production:
           context: api-assume-role-housing-production-context
           requires:
