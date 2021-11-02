@@ -20,8 +20,9 @@ functions:
     handler: BonusCalcListener::BonusCalcListener.SqsFunction::FunctionHandler
     role: lambdaExecutionRole
     environment:
-      ### Re-use the same parameter as used by web api applications
       ENVIRONMENT:  ${ssm:/housing-tl/${self:provider.stage}/aspnetcore-environment}
+      ### Reuse existing connection string from API (already definied in SSM)
+      CONNECTION_STRING: Host=${ssm:/bonuscalc-api/${self:provider.stage}/postgres-hostname};Port=${ssm:/bonuscalc-api/${self:provider.stage}/postgres-port};Database=${ssm:/bonuscalc-api/${self:provider.stage}/postgres-database};Username=${ssm:/bonuscalc-api/${self:provider.stage}/postgres-username};Password=${ssm:/bonuscalc-api/${self:provider.stage}/postgres-password}
     events:
       ### Specify the parameter containing the queue arn used to trigget the lambda function here
       ### This will have been defined in the terraform configuration

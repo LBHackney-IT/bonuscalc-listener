@@ -1,8 +1,7 @@
-using Amazon.XRay.Recorder.Core;
-using Amazon.XRay.Recorder.Core.Strategies;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using BonusCalcListener.Infrastructure;
 using Hackney.Core.Logging;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -76,6 +75,19 @@ namespace BonusCalcListener
         protected virtual void ConfigureServices(IServiceCollection services)
         {
             services.AddLogCallAspect();
+            ConfigureDbContext(services);
+        }
+
+        private void ConfigureDbContext(IServiceCollection services)
+        {
+            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING")
+                                ?? Configuration.GetValue<string>("DatabaseConnectionString");
+
+            services.AddDbContext<BonusCalcContext>(
+                opt => opt
+                    .UseNpgsql(connectionString)
+                    .UseSnakeCaseNamingConvention()
+            );
         }
     }
 }
