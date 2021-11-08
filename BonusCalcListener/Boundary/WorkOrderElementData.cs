@@ -5,7 +5,7 @@ namespace BonusCalcListener.Boundary
 {
     public class WorkOrderElementData
     {
-        public int Id { get; set; }
+        public string WorkOrderId { get; set; }
         public List<WorkElement> CompletedWorkElements { get; set; }
         public DateTime? ClosedTime { get; set; }
     }
