@@ -2,11 +2,6 @@ using System;
 
 namespace BonusCalcListener.Boundary
 {
-    /// <summary>
-    /// TODO
-    /// Suggested model of the event message received by the function
-    /// This will of course be dependent on the specific message expected.
-    /// </summary>
     public class EntityEventSns
     {
         public Guid Id { get; set; }
@@ -27,6 +22,6 @@ namespace BonusCalcListener.Boundary
 
         public Guid EntityId { get; set; }
 
-        public EventData EventData { get; set; } = new EventData();
+        public WorkOrderCompletedEventData EventData { get; set; }
     }
 }
