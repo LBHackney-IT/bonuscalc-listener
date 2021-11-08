@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using BonusCalcListener.Boundary;
 using BonusCalcListener.UseCase.Interfaces;
 using System;
@@ -13,6 +14,20 @@ namespace BonusCalcListener.Factories
             if (serviceProvider is null) throw new ArgumentNullException(nameof(serviceProvider));
 
             IMessageProcessing processor = null;
+
+            switch (evt.EventType)
+            {
+                case RepairsEventTypes.WorkOrderCompletedEvent:
+                    processor = serviceProvider.GetService<IAddNewWorkOrderPayElements>();
+                    break;
+
+                case RepairsEventTypes.WorkOrderUpdatedEvent:
+                    processor = serviceProvider.GetService<IUpdateExistingWorkOrderPayElements>();
+                    break;
+
+                default:
+                    throw new ArgumentException($"Unknown event type: {evt.EventType}");
+            }
 
             return processor;
         }
