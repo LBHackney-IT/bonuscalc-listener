@@ -1,26 +1,29 @@
 using BonusCalcListener.Boundary;
 using BonusCalcListener.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BonusCalcListener.Gateway
 {
     public class PayElementGateway : IPayElementGateway
     {
-        public Task<PayElement> GetEntityAsync(Guid id)
+        private readonly BonusCalcContext _context;
+
+        public PayElementGateway(BonusCalcContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public Task<IEnumerable<PayElement>> GetReactiveRepairsPayElementsByWorkOrderId(string workOrderId)
+        public async Task<IEnumerable<PayElement>> GetPayElementsByWorkOrderId(string workOrderId, int payElementType)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task SaveEntityAsync(PayElement entity)
-        {
-            throw new NotImplementedException();
+            return await _context.PayElements
+                .Where(pe => pe.PayElementTypeId == payElementType)
+                .Where(pe => pe.WorkOrder == workOrderId)
+                .ToListAsync();
         }
     }
 }
