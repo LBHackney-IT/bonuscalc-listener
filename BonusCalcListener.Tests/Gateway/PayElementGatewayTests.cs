@@ -201,7 +201,7 @@ namespace BonusCalcListener.Tests.Gateway
                         Duration = 7.0M,
                         Value = 0.0M,
                         ReadOnly = true,
-                        WorkOrder = "Other work order"
+                        WorkOrder = "OtherWrkOd"
                     }
                 }
             };
