@@ -12,7 +12,7 @@ namespace BonusCalcListener.Boundary
         public virtual List<RateScheduleItem> RateScheduleItem { get; set; }
         public virtual List<Trade> Trade { get; set; }
 
-        internal Infrastructure.PayElement ToPayElement()
+        public Infrastructure.PayElement ToPayElement()
         {
             throw new NotImplementedException();
         }
