@@ -22,6 +22,6 @@ namespace BonusCalcListener.Boundary
 
         public Guid EntityId { get; set; }
 
-        public WorkOrderElementData EventData { get; set; }
+        public WorkOrderOperativeSmvData EventData { get; set; }
     }
 }
