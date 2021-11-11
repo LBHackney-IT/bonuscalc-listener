@@ -1,6 +1,4 @@
-using BonusCalcListener.Infrastructure;
 using System;
-using System.Collections.Generic;
 
 namespace BonusCalcListener.Boundary
 {
@@ -8,6 +6,8 @@ namespace BonusCalcListener.Boundary
     {
         public string WorkOrderId { get; set; }
         public string Address { get; set; }
+
+        public string Description { get; set; }
 
         // The SMV for the whole job
         public double StandardMinuteValue { get; set; }

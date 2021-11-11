@@ -1,8 +1,6 @@
 using BonusCalcListener.Boundary;
 using BonusCalcListener.Infrastructure;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BonusCalcListener.UseCase
 {
@@ -32,6 +30,7 @@ namespace BonusCalcListener.UseCase
                 Friday = eventData.ClosedTime?.DayOfWeek == DayOfWeek.Friday ? operativeJobSmvHours : 0.0m,
                 Saturday = eventData.ClosedTime?.DayOfWeek == DayOfWeek.Saturday ? operativeJobSmvHours : 0.0m,
                 Sunday = eventData.ClosedTime?.DayOfWeek == DayOfWeek.Sunday ? operativeJobSmvHours : 0.0m,
+                Comment = eventData.Description
             };
         }
     }
