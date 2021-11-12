@@ -13,7 +13,8 @@ namespace BonusCalcListener.UseCase
 
             if (!eventData.JobPercentage.HasValue || eventData.JobPercentage <= 0) throw new ArgumentException($"Cannot have a job percentage of zero or less than zero, WorkOrder: {eventData.WorkOrderId}");
 
-            var operativeJobSmvHours = (decimal) (eventData.StandardMinuteValue * eventData.JobPercentage ?? 0) / 60;
+            var operativeJobSmvMinutes = (decimal) (eventData.StandardMinuteValue * eventData.JobPercentage ?? 0);
+            var operativeJobSmvHours = operativeJobSmvMinutes / 60;
 
             return new PayElement
             {
@@ -23,14 +24,15 @@ namespace BonusCalcListener.UseCase
                 WorkOrder = eventData.WorkOrderId,
                 Duration = operativeJobSmvHours,
                 ReadOnly = true,
-                Monday = eventData.ClosedTime?.DayOfWeek == DayOfWeek.Monday ? operativeJobSmvHours : 0.0m,
-                Tuesday = eventData.ClosedTime?.DayOfWeek == DayOfWeek.Tuesday ? operativeJobSmvHours : 0.0m,
-                Wednesday = eventData.ClosedTime?.DayOfWeek == DayOfWeek.Wednesday ? operativeJobSmvHours : 0.0m,
-                Thursday = eventData.ClosedTime?.DayOfWeek == DayOfWeek.Thursday ? operativeJobSmvHours : 0.0m,
-                Friday = eventData.ClosedTime?.DayOfWeek == DayOfWeek.Friday ? operativeJobSmvHours : 0.0m,
-                Saturday = eventData.ClosedTime?.DayOfWeek == DayOfWeek.Saturday ? operativeJobSmvHours : 0.0m,
-                Sunday = eventData.ClosedTime?.DayOfWeek == DayOfWeek.Sunday ? operativeJobSmvHours : 0.0m,
-                Comment = eventData.Description
+                Monday = eventData.ClosedTime.Value.DayOfWeek == DayOfWeek.Monday ? operativeJobSmvHours : 0.0m,
+                Tuesday = eventData.ClosedTime.Value.DayOfWeek == DayOfWeek.Tuesday ? operativeJobSmvHours : 0.0m,
+                Wednesday = eventData.ClosedTime.Value.DayOfWeek == DayOfWeek.Wednesday ? operativeJobSmvHours : 0.0m,
+                Thursday = eventData.ClosedTime.Value.DayOfWeek == DayOfWeek.Thursday ? operativeJobSmvHours : 0.0m,
+                Friday = eventData.ClosedTime.Value.DayOfWeek == DayOfWeek.Friday ? operativeJobSmvHours : 0.0m,
+                Saturday = eventData.ClosedTime.Value.DayOfWeek == DayOfWeek.Saturday ? operativeJobSmvHours : 0.0m,
+                Sunday = eventData.ClosedTime.Value.DayOfWeek == DayOfWeek.Sunday ? operativeJobSmvHours : 0.0m,
+                Comment = eventData.Description,
+                Value = operativeJobSmvMinutes
             };
         }
     }
