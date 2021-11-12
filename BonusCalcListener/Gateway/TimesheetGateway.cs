@@ -24,8 +24,9 @@ namespace BonusCalcListener.Gateway.Interfaces
 
             var week = await _context.Weeks
                 .Where(w => w.StartAt <= closedTime)
-                .Where(w => w.ClosedAt < closedTime)
-                .SingleOrDefaultAsync();
+                .Where(w => w.ClosedAt == null)
+                .OrderBy(w => w.StartAt)
+                .FirstOrDefaultAsync();
 
             if (week == null)
             {
