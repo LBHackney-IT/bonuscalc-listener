@@ -51,13 +51,6 @@ namespace BonusCalcListener.Tests.Factories
         }
 
         [Test]
-        public void FactoryChoosesCorrectServiceForValidCompletedMessage()
-        {
-            _evt = ConstructEvent(RepairsEventTypes.WorkOrderCompletedEvent);
-            TestMessageProcessingCreation<IUpdateExistingWorkOrderPayElements>(_evt);
-        }
-
-        [Test]
         public void FactoryChoosesCorrectServiceForValidUpdatedMessage()
         {
             _evt = ConstructEvent(RepairsEventTypes.WorkOrderUpdatedEvent);
