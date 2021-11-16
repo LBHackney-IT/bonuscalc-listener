@@ -1,6 +1,7 @@
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
 using BonusCalcListener.Boundary;
+using BonusCalcListener.Factories;
 using BonusCalcListener.Gateway;
 using BonusCalcListener.Gateway.Interfaces;
 using BonusCalcListener.UseCase;
@@ -40,7 +41,7 @@ namespace BonusCalcListener
         {
 
             services.AddHttpClient();
-            services.AddScoped<IDoSomethingUseCase, DoSomethingUseCase>();
+            services.AddScoped<IUpdateExistingWorkOrderPayElements, UpdateExistingWorkOrderPayElementsUseCase>();
 
             // TODO: replace with Postgres services.AddScoped<IDbEntityGateway, DynamoDbEntityGateway>();
 
@@ -81,20 +82,17 @@ namespace BonusCalcListener
             {
                 try
                 {
-                    IMessageProcessing processor = null;
-                    switch (entityEvent.EventType)
-                    {
-                        case EventTypes.DoSomethingEvent:
-                            {
-                                processor = ServiceProvider.GetService<IDoSomethingUseCase>();
-                                break;
-                            }
-                        // TODO - Implement other message types here...
-                        default:
-                            throw new ArgumentException($"Unknown event type: {entityEvent.EventType} on message id: {message.MessageId}");
-                    }
+                    IMessageProcessing processor = MessageProcessorFactory.CreateMessageProcessor(entityEvent, ServiceProvider);
 
-                    await processor.ProcessMessageAsync(entityEvent).ConfigureAwait(false);
+                    if (processor != null)
+                    {
+                        Logger.LogInformation($"Found a processor for message {message.MessageId}, type: {entityEvent.EventType}");
+                        await processor.ProcessMessageAsync(entityEvent).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        Logger.LogWarning($"Could not find a processor for message {message.MessageId} (type: {entityEvent.EventType} version: {entityEvent.Version}) so it will be ignored");
+                    }
                 }
                 catch (Exception ex)
                 {
