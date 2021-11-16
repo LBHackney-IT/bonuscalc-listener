@@ -1,3 +1,15 @@
+CREATE TABLE IF NOT EXISTS public.trades
+(
+    code text COLLATE pg_catalog."default" NOT NULL,
+    name text COLLATE pg_catalog."default",
+    CONSTRAINT pk_trades PRIMARY KEY (code)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.trades
+    OWNER to repairs_admin;
+
 CREATE TABLE IF NOT EXISTS public.work_order_status
 (
     id integer NOT NULL,
@@ -61,18 +73,6 @@ CREATE TABLE IF NOT EXISTS public.sor_priorities
 TABLESPACE pg_default;
 
 ALTER TABLE public.sor_priorities
-    OWNER to repairs_admin;
-
-CREATE TABLE IF NOT EXISTS public.trades
-(
-    code text COLLATE pg_catalog."default" NOT NULL,
-    name text COLLATE pg_catalog."default",
-    CONSTRAINT pk_trades PRIMARY KEY (code)
-)
-
-TABLESPACE pg_default;
-
-ALTER TABLE public.trades
     OWNER to repairs_admin;
 
 CREATE TABLE IF NOT EXISTS public.sor_codes
