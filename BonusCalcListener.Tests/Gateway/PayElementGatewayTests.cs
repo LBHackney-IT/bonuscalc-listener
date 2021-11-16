@@ -28,7 +28,7 @@ namespace BonusCalcListener.Tests.Gateway
             await AddTimesheet(operative, week);
 
             // Act
-            var result = await _classUnderTest.GetPayElementsByWorkOrderId("10002824", 301);
+            var result = await _classUnderTest.GetPayElementsByWorkOrderId("12824", 301);
 
             // Assert
             result.Sum(x => x.Wednesday).Should().Be(7.0m);
@@ -43,7 +43,7 @@ namespace BonusCalcListener.Tests.Gateway
             await AddTimesheet(operative, week);
 
             // Act
-            var result = await _classUnderTest.GetPayElementsByWorkOrderId("10002824", 302);
+            var result = await _classUnderTest.GetPayElementsByWorkOrderId("12824", 302);
 
             // Assert
             result.Should().BeEmpty();
@@ -138,7 +138,7 @@ namespace BonusCalcListener.Tests.Gateway
             var productivePayElementType = new PayElementType
             {
                 Id = 301,
-                Description = "Reactive Repairs",
+                Description = "Reactive",
                 PayAtBand = true,
                 Paid = true,
                 Adjustment = false,
@@ -162,7 +162,8 @@ namespace BonusCalcListener.Tests.Gateway
                         Friday = 0.0M,
                         Duration = 4.0M,
                         Value = 348.0M,
-                        ReadOnly = false
+                        ReadOnly = false,
+                        WorkOrder = "12821"
                     },
                     new PayElement
                     {
@@ -175,7 +176,7 @@ namespace BonusCalcListener.Tests.Gateway
                         Duration = 7.0M,
                         Value = 0.0M,
                         ReadOnly = true,
-                        WorkOrder = "10002824"
+                        WorkOrder = "12824"
                     },
                     new PayElement
                     {
@@ -188,7 +189,7 @@ namespace BonusCalcListener.Tests.Gateway
                         Duration = 7.0M,
                         Value = 0.0M,
                         ReadOnly = true,
-                        WorkOrder = "10002824"
+                        WorkOrder = "12824"
                     },
                     new PayElement
                     {
@@ -201,7 +202,7 @@ namespace BonusCalcListener.Tests.Gateway
                         Duration = 7.0M,
                         Value = 0.0M,
                         ReadOnly = true,
-                        WorkOrder = "OtherWrkOd"
+                        WorkOrder = "OthrW"
                     }
                 }
             };
