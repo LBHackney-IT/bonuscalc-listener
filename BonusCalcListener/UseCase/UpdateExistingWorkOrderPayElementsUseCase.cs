@@ -36,11 +36,11 @@ namespace BonusCalcListener.UseCase
             _logger.LogInformation($"Starting to process update to work order ID: {data.WorkOrderId}");
 
             //1a. Get the timesheet for the operative based on the opId and closed time of the work order
-            var operativeTimesheet = await _timesheetGateway.GetCurrentTimeSheetForOperative(data.OperativeId, data.ClosedTime);
+            var operativeTimesheet = await _timesheetGateway.GetCurrentTimeSheetForOperative(data.OperativePrn, data.ClosedTime);
 
             if (operativeTimesheet == null)
             {
-                throw new InvalidOperationException($"No operative timesheet found to add work elements to! OperativeID: {data.OperativeId} ClosedTime: {data.ClosedTime}");
+                throw new InvalidOperationException($"No operative timesheet found to add work elements to! OperativeID: {data.OperativePrn} ClosedTime: {data.ClosedTime}");
             }
 
             _logger.LogInformation($"Found timesheet {operativeTimesheet.Id} for {data.WorkOrderId}");
@@ -61,7 +61,7 @@ namespace BonusCalcListener.UseCase
             //3b. Add the new elements & save
             existingPayElementCollection.Add(npe);
 
-            _logger.LogInformation($"Added {npe.Value} SMVs to operative {data.OperativeId} for work order {data.WorkOrderId}!");
+            _logger.LogInformation($"Added {npe.Value} SMVs to operative {data.OperativePrn} for work order {data.WorkOrderId}!");
 
             await _dbSaver.SaveChangesAsync();
 

@@ -47,14 +47,14 @@ namespace BonusCalcListener.Tests.Factories
 
             Action act = () => MessageProcessorFactory.CreateMessageProcessor(_evt, _mockServiceProvider.Object);
             act.Should().Throw<ArgumentException>().WithMessage($"Unknown event type: {_evt.EventType}");
-            _mockServiceProvider.Verify(x => x.GetService(typeof(IAddNewWorkOrderPayElements)), Times.Never);
+            _mockServiceProvider.Verify(x => x.GetService(typeof(IUpdateExistingWorkOrderPayElements)), Times.Never);
         }
 
         [Test]
         public void FactoryChoosesCorrectServiceForValidCompletedMessage()
         {
             _evt = ConstructEvent(RepairsEventTypes.WorkOrderCompletedEvent);
-            TestMessageProcessingCreation<IAddNewWorkOrderPayElements>(_evt);
+            TestMessageProcessingCreation<IUpdateExistingWorkOrderPayElements>(_evt);
         }
 
         [Test]

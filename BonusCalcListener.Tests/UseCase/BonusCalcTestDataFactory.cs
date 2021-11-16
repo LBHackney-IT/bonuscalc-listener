@@ -144,7 +144,7 @@ namespace BonusCalcListener.Tests.UseCase
                     WorkOrderId = "10003773",
                     Address = "34 DeBeauvoir Square, London, N4 2FL",
                     StandardMinuteValue = 100,
-                    OperativeId = "4044",
+                    OperativePrn = "4044",
                     JobPercentage = 0.50d,
                     ClosedTime = new DateTime(2021, 11, 09, 21, 28, 00)
                 }

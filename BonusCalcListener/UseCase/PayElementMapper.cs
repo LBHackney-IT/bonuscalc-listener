@@ -9,7 +9,7 @@ namespace BonusCalcListener.UseCase
         const int REACTIVE_REPAIRS_TYPE = 301;
         public PayElement BuildPayElement(WorkOrderOperativeSmvData eventData, Timesheet operativeTimesheet)
         {
-            if (!eventData.ClosedTime.HasValue) throw new ArgumentException($"Cannot create a pay element with null closed time, WorkOrder: {eventData.WorkOrderId}, operative: {eventData.OperativeId}");
+            if (!eventData.ClosedTime.HasValue) throw new ArgumentException($"Cannot create a pay element with null closed time, WorkOrder: {eventData.WorkOrderId}, operative: {eventData.OperativePrn}");
 
             if (!eventData.JobPercentage.HasValue || eventData.JobPercentage <= 0) throw new ArgumentException($"Cannot have a job percentage of zero or less than zero, WorkOrder: {eventData.WorkOrderId}");
 

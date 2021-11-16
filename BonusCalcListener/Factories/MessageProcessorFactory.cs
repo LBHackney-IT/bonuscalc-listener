@@ -17,10 +17,6 @@ namespace BonusCalcListener.Factories
 
             switch (evt.EventType)
             {
-                case RepairsEventTypes.WorkOrderCompletedEvent:
-                    processor = serviceProvider.GetService<IAddNewWorkOrderPayElements>();
-                    break;
-
                 case RepairsEventTypes.WorkOrderUpdatedEvent:
                     processor = serviceProvider.GetService<IUpdateExistingWorkOrderPayElements>();
                     break;

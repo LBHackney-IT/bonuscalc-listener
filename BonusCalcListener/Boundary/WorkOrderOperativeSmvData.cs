@@ -11,7 +11,7 @@ namespace BonusCalcListener.Boundary
 
         // The SMV for the whole job
         public double StandardMinuteValue { get; set; }
-        public string OperativeId { get; set; }
+        public string OperativePrn { get; set; }
         public double? JobPercentage { get; set; }
         public DateTime? ClosedTime { get; set; }
     }

@@ -29,7 +29,7 @@ namespace BonusCalcListener.Tests.UseCase
             // Act + Assert
             _sut.Invoking(s => s.BuildPayElement(evtData, timesheet))
                 .Should().Throw<ArgumentException>()
-                .WithMessage($"Cannot create a pay element with null closed time, WorkOrder: {evtData.WorkOrderId}, operative: {evtData.OperativeId}");
+                .WithMessage($"Cannot create a pay element with null closed time, WorkOrder: {evtData.WorkOrderId}, operative: {evtData.OperativePrn}");
         }
 
         [Test]
