@@ -43,4 +43,4 @@ services:
     env_file:
       - database.env
     volumes:
-      - ./database:/docker-entrypoint-initdb.d
+      - ./database/init-testdb.sql:/docker-entrypoint-initdb.d/init-testdb.sql
