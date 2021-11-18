@@ -1,3 +1,5 @@
+using System;
+
 namespace BonusCalcListener.Infrastructure
 {
     public class PayElementUpdate
@@ -23,5 +25,6 @@ namespace BonusCalcListener.Infrastructure
         public decimal Duration { get; set; }
 
         public decimal Value { get; set; }
+        public DateTime? ClosedAt { get; set; }
     }
 }

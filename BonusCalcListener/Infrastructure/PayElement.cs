@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace BonusCalcListener.Infrastructure
@@ -32,6 +33,7 @@ namespace BonusCalcListener.Infrastructure
 
         public decimal Value { get; set; }
         public bool ReadOnly { get; set; }
+        public DateTime? ClosedAt { get; set; }
 
         public void UpdateFrom(PayElementUpdate payElement)
         {
@@ -48,6 +50,7 @@ namespace BonusCalcListener.Infrastructure
             Value = payElement.Value;
             WorkOrder = payElement.WorkOrder;
             PayElementTypeId = payElement.PayElementTypeId;
+            ClosedAt = payElement.ClosedAt;
         }
     }
 }

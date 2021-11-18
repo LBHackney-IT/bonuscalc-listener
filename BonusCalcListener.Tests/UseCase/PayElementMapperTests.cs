@@ -69,6 +69,7 @@ namespace BonusCalcListener.Tests.UseCase
             result.Saturday.Should().Be(0);
             result.Sunday.Should().Be(0);
             result.Duration.Should().Be((decimal) (evtData.StandardMinuteValue * evtData.JobPercentage) / 60);
+            result.ClosedAt.Should().Be(evtData.ClosedTime);
         }
 
         [SetUp]
