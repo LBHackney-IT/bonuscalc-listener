@@ -151,5 +151,25 @@ namespace BonusCalcListener.Tests.UseCase
                 }
             };
         }
+
+        public static EntityEventSns CancelledMessage()
+        {
+            return new EntityEventSns
+            {
+                Id = Guid.NewGuid(),
+                EventType = RepairsEventTypes.WorkOrderUpdatedEvent,
+                DateTime = DateTime.Now,
+                EventData = new WorkOrderOperativeSmvData
+                {
+                    WorkOrderId = "10003773",
+                    WorkOrderStatusCode = 30,
+                    Address = "34 DeBeauvoir Square, London, N4 2FL",
+                    StandardMinuteValue = 100,
+                    OperativePrn = "4044",
+                    JobPercentage = 0.50d,
+                    ClosedTime = new DateTime(2021, 11, 09, 21, 28, 00)
+                }
+            };
+        }
     }
 }

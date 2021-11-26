@@ -68,6 +68,31 @@ namespace BonusCalcListener.Tests.UseCase
         }
 
         [Test]
+        public void ShouldNotAddPayElementWithCancelledRequest()
+        {
+            var payElements = BonusCalcTestDataFactory.GeneratePayElements();
+
+            _mockTimesheetGateway.Setup(tsg => tsg.GetCurrentTimeSheetForOperative(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(Task.FromResult<Timesheet>(BonusCalcTestDataFactory.ValidTimesheet()));
+
+            _mockPayElementGateway.Setup(peg => peg.GetPayElementsByWorkOrderId(It.IsAny<string>(), It.IsAny<int>()))
+                .Returns(Task.FromResult(payElements));
+
+            _mockPayElementsMapper.Setup(pem => pem.BuildPayElement(It.IsAny<WorkOrderOperativeSmvData>(), It.IsAny<Timesheet>()))
+                .Returns(_mockPayElement.Object);
+
+            _mockDbSaver.Setup(db => db.SaveChangesAsync())
+                .Verifiable();
+
+            // Act
+            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.CancelledMessage()));
+
+            // Assert
+            Assert.IsEmpty(payElements);
+            _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Once);
+        }
+
+        [Test]
         public void ShouldNotAddAnyPayElementsIfTimesheetCannotBeFound()
         {
             // Arrange

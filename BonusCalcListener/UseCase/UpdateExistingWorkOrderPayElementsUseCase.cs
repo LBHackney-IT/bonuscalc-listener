@@ -19,6 +19,7 @@ namespace BonusCalcListener.UseCase
         private readonly ILogger<UpdateExistingWorkOrderPayElementsUseCase> _logger;
 
         const int REACTIVE_REPAIRS_PAY_ELEMENT_TYPE = 301;
+        const int CANCELLED_STATUS = 30;
 
         public UpdateExistingWorkOrderPayElementsUseCase(IPayElementGateway payElementGateway, ITimesheetGateway timesheetGateway, IMapPayElements payElementMapper, IDbSaver dbSaver, ILogger<UpdateExistingWorkOrderPayElementsUseCase> logger)
         {
@@ -55,16 +56,19 @@ namespace BonusCalcListener.UseCase
                 existingPayElementCollection.Clear();
             }
 
-            //3a. Create pay element
-            var npe = _payElementMapper.BuildPayElement(message.EventData, operativeTimesheet);
+            // Don't create a pay element if the work order was cancelled
+            if (data.WorkOrderStatusCode != CANCELLED_STATUS)
+            {
+                //3a. Create pay element
+                var npe = _payElementMapper.BuildPayElement(message.EventData, operativeTimesheet);
 
-            //3b. Add the new elements & save
-            existingPayElementCollection.Add(npe);
+                //3b. Add the new elements & save
+                existingPayElementCollection.Add(npe);
 
-            _logger.LogInformation($"Added {npe.Value} SMVs to operative {data.OperativePrn} for work order {data.WorkOrderId}!");
+                _logger.LogInformation($"Added {npe.Value} SMVs to operative {data.OperativePrn} for work order {data.WorkOrderId}!");
+            }
 
             await _dbSaver.SaveChangesAsync();
-
         }
     }
 }
