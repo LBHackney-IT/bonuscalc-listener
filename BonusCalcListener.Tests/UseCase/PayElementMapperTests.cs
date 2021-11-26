@@ -54,6 +54,9 @@ namespace BonusCalcListener.Tests.UseCase
             // Arrange
             var timesheet = _fixture.Create<Timesheet>();
             var evtData = _fixture.Create<WorkOrderOperativeSmvData>();
+            evtData.WorkOrderStatusCode = 50;
+            evtData.StandardMinuteValue = 300;
+            evtData.JobPercentage = 50;
             evtData.ClosedTime = new DateTime(2021, 11, 08, 14, 32, 01);
 
             // Act
@@ -61,15 +64,50 @@ namespace BonusCalcListener.Tests.UseCase
 
             // Assert
             result.TimesheetId.Should().Be(timesheet.Id);
-            result.Monday.Should().Be((decimal) (evtData.StandardMinuteValue * evtData.JobPercentage) / 60);
-            result.Tuesday.Should().Be(0);
-            result.Wednesday.Should().Be(0);
-            result.Thursday.Should().Be(0);
-            result.Friday.Should().Be(0);
-            result.Saturday.Should().Be(0);
-            result.Sunday.Should().Be(0);
-            result.Duration.Should().Be((decimal) (evtData.StandardMinuteValue * evtData.JobPercentage) / 60);
+            result.WorkOrder.Should().Be(evtData.WorkOrderId);
+            result.Address.Should().Be(evtData.Address);
+            result.Comment.Should().Be(evtData.Description);
             result.ClosedAt.Should().Be(evtData.ClosedTime);
+            result.Monday.Should().Be(2.5m);
+            result.Tuesday.Should().Be(0.0m);
+            result.Wednesday.Should().Be(0.0m);
+            result.Thursday.Should().Be(0.0m);
+            result.Friday.Should().Be(0.0m);
+            result.Saturday.Should().Be(0.0m);
+            result.Sunday.Should().Be(0.0m);
+            result.Duration.Should().Be(2.5m);
+            result.Value.Should().Be(150.0m);
+        }
+
+        [Test]
+        public void ShouldCreatePayElementWithZeroValue()
+        {
+            // Arrange
+            var timesheet = _fixture.Create<Timesheet>();
+            var evtData = _fixture.Create<WorkOrderOperativeSmvData>();
+            evtData.WorkOrderStatusCode = 1000;
+            evtData.StandardMinuteValue = 300;
+            evtData.JobPercentage = 50;
+            evtData.ClosedTime = new DateTime(2021, 11, 08, 14, 32, 01);
+
+            // Act
+            var result = _sut.BuildPayElement(evtData, timesheet);
+
+            // Assert
+            result.TimesheetId.Should().Be(timesheet.Id);
+            result.WorkOrder.Should().Be(evtData.WorkOrderId);
+            result.Address.Should().Be(evtData.Address);
+            result.Comment.Should().Be(evtData.Description);
+            result.ClosedAt.Should().Be(evtData.ClosedTime);
+            result.Monday.Should().Be(0.0m);
+            result.Tuesday.Should().Be(0.0m);
+            result.Wednesday.Should().Be(0.0m);
+            result.Thursday.Should().Be(0.0m);
+            result.Friday.Should().Be(0.0m);
+            result.Saturday.Should().Be(0.0m);
+            result.Sunday.Should().Be(0.0m);
+            result.Duration.Should().Be(0.0m);
+            result.Value.Should().Be(0.0m);
         }
 
         [SetUp]
