@@ -13,6 +13,9 @@ namespace BonusCalcListener.Infrastructure
         [StringLength(100)]
         public string Name { get; set; }
 
+        [StringLength(100)]
+        public string EmailAddress { get; set; }
+
         [Required]
         [StringLength(3)]
         public string TradeId { get; set; }
@@ -26,6 +29,8 @@ namespace BonusCalcListener.Infrastructure
         public string Section { get; set; }
 
         public int SalaryBand { get; set; }
+
+        public decimal Utilisation { get; set; }
 
         public bool FixedBand { get; set; }
 

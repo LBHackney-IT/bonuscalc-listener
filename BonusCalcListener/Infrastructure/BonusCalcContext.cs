@@ -29,6 +29,9 @@ namespace BonusCalcListener.Infrastructure
                 .IsUnique();
 
             modelBuilder.Entity<Operative>()
+                .HasIndex(o => o.TradeId);
+
+            modelBuilder.Entity<Operative>()
                 .HasOne(o => o.Trade)
                 .WithMany(t => t.Operatives)
                 .HasForeignKey(o => o.TradeId);
@@ -40,6 +43,15 @@ namespace BonusCalcListener.Infrastructure
                 .HasOne(o => o.Scheme)
                 .WithMany(s => s.Operatives)
                 .HasForeignKey(o => o.SchemeId);
+
+            modelBuilder.Entity<Operative>()
+                .HasIndex(o => o.EmailAddress)
+                .IsUnique();
+
+            modelBuilder.Entity<Operative>()
+                .Property(o => o.Utilisation)
+                .HasPrecision(5, 4)
+                .HasDefaultValue(1.0);
 
             modelBuilder.Entity<PayBand>()
                 .Property(pb => pb.Id)
@@ -54,9 +66,15 @@ namespace BonusCalcListener.Infrastructure
                 .HasForeignKey(pb => pb.SchemeId);
 
             modelBuilder.Entity<PayElement>()
+                .HasIndex(pe => pe.TimesheetId);
+
+            modelBuilder.Entity<PayElement>()
                 .HasOne(pe => pe.Timesheet)
                 .WithMany(t => t.PayElements)
                 .HasForeignKey(t => t.TimesheetId);
+
+            modelBuilder.Entity<PayElement>()
+                .HasIndex(pe => pe.PayElementTypeId);
 
             modelBuilder.Entity<PayElement>()
                 .HasOne(pe => pe.PayElementType)
@@ -115,11 +133,27 @@ namespace BonusCalcListener.Infrastructure
                 .IsUnique();
 
             modelBuilder.Entity<PayElementType>()
+                .Property(pet => pet.NonProductive)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<PayElementType>()
                 .Property(pet => pet.Productive)
                 .HasDefaultValue(false);
 
             modelBuilder.Entity<PayElementType>()
                 .Property(pet => pet.Adjustment)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<PayElementType>()
+                .Property(pet => pet.OutOfHours)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<PayElementType>()
+                .Property(pet => pet.Overtime)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<PayElementType>()
+                .Property(pet => pet.Selectable)
                 .HasDefaultValue(false);
 
             modelBuilder.Entity<Scheme>()
@@ -136,8 +170,15 @@ namespace BonusCalcListener.Infrastructure
                 .HasDefaultValue(1.0);
 
             modelBuilder.Entity<Timesheet>()
+                .Property(t => t.Id)
+                .ValueGeneratedNever();
+
+            modelBuilder.Entity<Timesheet>()
                 .HasIndex(t => new { t.OperativeId, t.WeekId })
                 .IsUnique();
+
+            modelBuilder.Entity<Timesheet>()
+                .HasIndex(t => t.WeekId);
 
             modelBuilder.Entity<Timesheet>()
                 .HasOne(t => t.Operative)
@@ -148,6 +189,11 @@ namespace BonusCalcListener.Infrastructure
                 .HasOne(t => t.Week)
                 .WithMany(w => w.Timesheets)
                 .HasForeignKey(t => t.WeekId);
+
+            modelBuilder.Entity<Timesheet>()
+                .Property(t => t.Utilisation)
+                .HasPrecision(5, 4)
+                .HasDefaultValue(1.0);
 
             modelBuilder.Entity<Trade>()
                 .HasIndex(t => t.Description)

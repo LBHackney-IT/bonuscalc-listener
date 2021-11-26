@@ -148,6 +148,7 @@ namespace BonusCalcListener.Tests.Gateway
 
             var timesheet = new Timesheet
             {
+                Id = "123456/2021-10-18",
                 Week = week,
                 Operative = operative,
                 PayElements = new List<PayElement>()

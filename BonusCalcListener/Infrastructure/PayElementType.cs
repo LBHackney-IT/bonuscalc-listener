@@ -22,6 +22,12 @@ namespace BonusCalcListener.Infrastructure
 
         public bool Adjustment { get; set; }
 
+        public bool OutOfHours { get; set; }
+
+        public bool Overtime { get; set; }
+
+        public bool Selectable { get; set; }
+
         public List<PayElement> PayElements { get; set; }
     }
 }
