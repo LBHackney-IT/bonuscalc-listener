@@ -86,7 +86,7 @@ namespace BonusCalcListener.Tests.UseCase
             return timesheet;
         }
 
-        public static IEnumerable<PayElement> GeneratePayElements()
+        public static List<PayElement> GeneratePayElements()
         {
             var productivePayElementType = new PayElementType
             {
@@ -142,6 +142,7 @@ namespace BonusCalcListener.Tests.UseCase
                 EventData = new WorkOrderOperativeSmvData
                 {
                     WorkOrderId = "10003773",
+                    WorkOrderStatusCode = 50,
                     Address = "34 DeBeauvoir Square, London, N4 2FL",
                     StandardMinuteValue = 100,
                     OperativePrn = "4044",

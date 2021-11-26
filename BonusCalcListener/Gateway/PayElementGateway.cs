@@ -15,7 +15,7 @@ namespace BonusCalcListener.Gateway
             _context = context;
         }
 
-        public async Task<IEnumerable<PayElement>> GetPayElementsByWorkOrderId(string workOrderId, int payElementType)
+        public async Task<List<PayElement>> GetPayElementsByWorkOrderId(string workOrderId, int payElementType)
         {
             return await _context.PayElements
                 .Where(pe => pe.PayElementTypeId == payElementType)

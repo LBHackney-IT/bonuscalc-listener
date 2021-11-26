@@ -46,7 +46,7 @@ namespace BonusCalcListener.UseCase
             _logger.LogInformation($"Found timesheet {operativeTimesheet.Id} for {data.WorkOrderId}");
 
             //1b. Get the work order (if any) from the database
-            var existingPayElementCollection = (await _payElementGateway.GetPayElementsByWorkOrderId(data.WorkOrderId, REACTIVE_REPAIRS_PAY_ELEMENT_TYPE)).ToList();
+            var existingPayElementCollection = await _payElementGateway.GetPayElementsByWorkOrderId(data.WorkOrderId, REACTIVE_REPAIRS_PAY_ELEMENT_TYPE);
 
             //2. If any have been found, remove them
             if (existingPayElementCollection.Any())
