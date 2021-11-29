@@ -86,7 +86,7 @@ namespace BonusCalcListener.Tests.UseCase
             return timesheet;
         }
 
-        public static IEnumerable<PayElement> GeneratePayElements()
+        public static List<PayElement> GeneratePayElements()
         {
             var productivePayElementType = new PayElementType
             {
@@ -134,6 +134,26 @@ namespace BonusCalcListener.Tests.UseCase
 
         public static EntityEventSns ValidMessage()
         {
+            return SnsMessage(RepairsStatusCodes.Completed);
+        }
+
+        public static EntityEventSns NoAccessMessage()
+        {
+            return SnsMessage(RepairsStatusCodes.NoAccess);
+        }
+
+        public static EntityEventSns CancelledMessage()
+        {
+            return SnsMessage(RepairsStatusCodes.Cancelled);
+        }
+
+        public static EntityEventSns UnknownMessage()
+        {
+            return SnsMessage(999);
+        }
+
+        private static EntityEventSns SnsMessage(int WorkOrderStatusCode)
+        {
             return new EntityEventSns
             {
                 Id = Guid.NewGuid(),
@@ -142,6 +162,7 @@ namespace BonusCalcListener.Tests.UseCase
                 EventData = new WorkOrderOperativeSmvData
                 {
                     WorkOrderId = "10003773",
+                    WorkOrderStatusCode = WorkOrderStatusCode,
                     Address = "34 DeBeauvoir Square, London, N4 2FL",
                     StandardMinuteValue = 100,
                     OperativePrn = "4044",

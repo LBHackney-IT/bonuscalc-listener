@@ -8,6 +8,6 @@ namespace BonusCalcListener.Gateway
 {
     public interface IPayElementGateway
     {
-        Task<IEnumerable<PayElement>> GetPayElementsByWorkOrderId(string workOrderId, int payElementType);
+        Task<List<PayElement>> GetPayElementsByWorkOrderId(string workOrderId, int payElementType);
     }
 }

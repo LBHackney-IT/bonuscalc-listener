@@ -46,7 +46,7 @@ namespace BonusCalcListener.UseCase
             _logger.LogInformation($"Found timesheet {operativeTimesheet.Id} for {data.WorkOrderId}");
 
             //1b. Get the work order (if any) from the database
-            var existingPayElementCollection = (await _payElementGateway.GetPayElementsByWorkOrderId(data.WorkOrderId, REACTIVE_REPAIRS_PAY_ELEMENT_TYPE)).ToList();
+            var existingPayElementCollection = await _payElementGateway.GetPayElementsByWorkOrderId(data.WorkOrderId, REACTIVE_REPAIRS_PAY_ELEMENT_TYPE);
 
             //2. If any have been found, remove them
             if (existingPayElementCollection.Any())
@@ -55,16 +55,19 @@ namespace BonusCalcListener.UseCase
                 existingPayElementCollection.Clear();
             }
 
-            //3a. Create pay element
-            var npe = _payElementMapper.BuildPayElement(message.EventData, operativeTimesheet);
+            // Only create a pay element if the work order was completed or is no access
+            if (data.WorkOrderStatusCode == RepairsStatusCodes.Completed || data.WorkOrderStatusCode == RepairsStatusCodes.NoAccess)
+            {
+                //3a. Create pay element
+                var npe = _payElementMapper.BuildPayElement(message.EventData, operativeTimesheet);
 
-            //3b. Add the new elements & save
-            existingPayElementCollection.Add(npe);
+                //3b. Add the new elements & save
+                existingPayElementCollection.Add(npe);
 
-            _logger.LogInformation($"Added {npe.Value} SMVs to operative {data.OperativePrn} for work order {data.WorkOrderId}!");
+                _logger.LogInformation($"Added {npe.Value} SMVs to operative {data.OperativePrn} for work order {data.WorkOrderId}!");
+            }
 
             await _dbSaver.SaveChangesAsync();
-
         }
     }
 }

@@ -8,7 +8,9 @@ namespace BonusCalcListener.Infrastructure
         [Key]
         public int Id { get; set; }
 
-        public int TimesheetId { get; set; }
+        [Required]
+        [StringLength(17)]
+        public string TimesheetId { get; set; }
         public Timesheet Timesheet { get; set; }
 
         public int PayElementTypeId { get; set; }
@@ -34,23 +36,5 @@ namespace BonusCalcListener.Infrastructure
         public decimal Value { get; set; }
         public bool ReadOnly { get; set; }
         public DateTime? ClosedAt { get; set; }
-
-        public void UpdateFrom(PayElementUpdate payElement)
-        {
-            Address = payElement.Address;
-            Comment = payElement.Comment;
-            Monday = payElement.Monday;
-            Tuesday = payElement.Tuesday;
-            Wednesday = payElement.Wednesday;
-            Thursday = payElement.Thursday;
-            Friday = payElement.Friday;
-            Saturday = payElement.Saturday;
-            Sunday = payElement.Sunday;
-            Duration = payElement.Duration;
-            Value = payElement.Value;
-            WorkOrder = payElement.WorkOrder;
-            PayElementTypeId = payElement.PayElementTypeId;
-            ClosedAt = payElement.ClosedAt;
-        }
     }
 }
