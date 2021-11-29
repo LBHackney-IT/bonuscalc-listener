@@ -55,8 +55,8 @@ namespace BonusCalcListener.UseCase
                 existingPayElementCollection.Clear();
             }
 
-            // Don't create a pay element if the work order was cancelled
-            if (data.WorkOrderStatusCode != RepairsStatusCodes.Cancelled)
+            // Only create a pay element if the work order was completed or is no access
+            if (data.WorkOrderStatusCode == RepairsStatusCodes.Completed || data.WorkOrderStatusCode == RepairsStatusCodes.NoAccess)
             {
                 //3a. Create pay element
                 var npe = _payElementMapper.BuildPayElement(message.EventData, operativeTimesheet);

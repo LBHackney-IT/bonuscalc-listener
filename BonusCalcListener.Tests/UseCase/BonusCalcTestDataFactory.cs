@@ -134,25 +134,25 @@ namespace BonusCalcListener.Tests.UseCase
 
         public static EntityEventSns ValidMessage()
         {
-            return new EntityEventSns
-            {
-                Id = Guid.NewGuid(),
-                EventType = RepairsEventTypes.WorkOrderUpdatedEvent,
-                DateTime = DateTime.Now,
-                EventData = new WorkOrderOperativeSmvData
-                {
-                    WorkOrderId = "10003773",
-                    WorkOrderStatusCode = 50,
-                    Address = "34 DeBeauvoir Square, London, N4 2FL",
-                    StandardMinuteValue = 100,
-                    OperativePrn = "4044",
-                    JobPercentage = 0.50d,
-                    ClosedTime = new DateTime(2021, 11, 09, 21, 28, 00)
-                }
-            };
+            return SnsMessage(RepairsStatusCodes.Completed);
+        }
+
+        public static EntityEventSns NoAccessMessage()
+        {
+            return SnsMessage(RepairsStatusCodes.NoAccess);
         }
 
         public static EntityEventSns CancelledMessage()
+        {
+            return SnsMessage(RepairsStatusCodes.Cancelled);
+        }
+
+        public static EntityEventSns UnknownMessage()
+        {
+            return SnsMessage(999);
+        }
+
+        private static EntityEventSns SnsMessage(int WorkOrderStatusCode)
         {
             return new EntityEventSns
             {
@@ -162,7 +162,7 @@ namespace BonusCalcListener.Tests.UseCase
                 EventData = new WorkOrderOperativeSmvData
                 {
                     WorkOrderId = "10003773",
-                    WorkOrderStatusCode = 30,
+                    WorkOrderStatusCode = WorkOrderStatusCode,
                     Address = "34 DeBeauvoir Square, London, N4 2FL",
                     StandardMinuteValue = 100,
                     OperativePrn = "4044",
