@@ -287,6 +287,7 @@ CREATE TABLE IF NOT EXISTS public.pay_elements
     thursday numeric(10,4) NOT NULL DEFAULT 0.0,
     tuesday numeric(10,4) NOT NULL DEFAULT 0.0,
     wednesday numeric(10,4) NOT NULL DEFAULT 0.0,
+    closed_at timestamp without time zone,
     CONSTRAINT pk_pay_elements PRIMARY KEY (id),
     CONSTRAINT fk_pay_elements_pay_element_types_pay_element_type_id FOREIGN KEY (pay_element_type_id)
         REFERENCES public.pay_element_types (id) MATCH SIMPLE

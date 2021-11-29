@@ -32,7 +32,8 @@ namespace BonusCalcListener.UseCase
                 Saturday = eventData.ClosedTime.Value.DayOfWeek == DayOfWeek.Saturday ? operativeJobSmvHours : 0.0m,
                 Sunday = eventData.ClosedTime.Value.DayOfWeek == DayOfWeek.Sunday ? operativeJobSmvHours : 0.0m,
                 Comment = eventData.Description,
-                Value = operativeJobSmvMinutes
+                Value = operativeJobSmvMinutes,
+                ClosedAt = eventData.ClosedTime
             };
         }
     }
