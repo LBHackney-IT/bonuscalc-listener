@@ -7,7 +7,6 @@ namespace BonusCalcListener.UseCase
     public class PayElementMapper : IMapPayElements
     {
         const int REACTIVE_REPAIRS_TYPE = 301;
-        const int COMPLETED_STATUS = 50;
 
         public PayElement BuildPayElement(WorkOrderOperativeSmvData eventData, Timesheet operativeTimesheet)
         {
@@ -18,7 +17,7 @@ namespace BonusCalcListener.UseCase
 
             if (!eventData.JobPercentage.HasValue || eventData.JobPercentage <= 0) throw new ArgumentException($"Cannot have a job percentage of zero or less than zero, WorkOrder: {eventData.WorkOrderId}");
 
-            if (eventData.WorkOrderStatusCode == COMPLETED_STATUS)
+            if (eventData.WorkOrderStatusCode == RepairsStatusCodes.Completed)
             {
                 operativeJobSmvMinutes = (decimal) (eventData.StandardMinuteValue * eventData.JobPercentage / 100 ?? 0);
                 operativeJobSmvHours = operativeJobSmvMinutes / 60;

@@ -19,7 +19,6 @@ namespace BonusCalcListener.UseCase
         private readonly ILogger<UpdateExistingWorkOrderPayElementsUseCase> _logger;
 
         const int REACTIVE_REPAIRS_PAY_ELEMENT_TYPE = 301;
-        const int CANCELLED_STATUS = 30;
 
         public UpdateExistingWorkOrderPayElementsUseCase(IPayElementGateway payElementGateway, ITimesheetGateway timesheetGateway, IMapPayElements payElementMapper, IDbSaver dbSaver, ILogger<UpdateExistingWorkOrderPayElementsUseCase> logger)
         {
@@ -57,7 +56,7 @@ namespace BonusCalcListener.UseCase
             }
 
             // Don't create a pay element if the work order was cancelled
-            if (data.WorkOrderStatusCode != CANCELLED_STATUS)
+            if (data.WorkOrderStatusCode != RepairsStatusCodes.Cancelled)
             {
                 //3a. Create pay element
                 var npe = _payElementMapper.BuildPayElement(message.EventData, operativeTimesheet);
