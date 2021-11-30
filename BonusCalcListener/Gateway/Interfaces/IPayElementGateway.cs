@@ -1,10 +1,8 @@
-using BonusCalcListener.Boundary;
 using BonusCalcListener.Infrastructure;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace BonusCalcListener.Gateway
+namespace BonusCalcListener.Gateway.Interfaces
 {
     public interface IPayElementGateway
     {

@@ -1,3 +1,4 @@
+using BonusCalcListener.Gateway.Interfaces;
 using BonusCalcListener.Infrastructure;
 using System;
 using System.Threading.Tasks;
@@ -5,7 +6,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace BonusCalcListener.Gateway.Interfaces
+namespace BonusCalcListener.Gateway
 {
     public class TimesheetGateway : ITimesheetGateway
     {
