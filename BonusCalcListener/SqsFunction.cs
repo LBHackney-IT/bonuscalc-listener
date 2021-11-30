@@ -4,6 +4,7 @@ using BonusCalcListener.Boundary;
 using BonusCalcListener.Factories;
 using BonusCalcListener.Gateway;
 using BonusCalcListener.Gateway.Interfaces;
+using BonusCalcListener.Infrastructure;
 using BonusCalcListener.UseCase;
 using BonusCalcListener.UseCase.Interfaces;
 using Hackney.Core.Logging;
@@ -45,8 +46,7 @@ namespace BonusCalcListener
             services.AddScoped<IPayElementGateway, PayElementGateway>();
             services.AddScoped<ITimesheetGateway, TimesheetGateway>();
             services.AddScoped<IMapPayElements, PayElementMapper>();
-
-
+            services.AddScoped<IDbSaver, DbSaver>();
 
             // TODO: replace with Postgres services.AddScoped<IDbEntityGateway, DynamoDbEntityGateway>();
 
