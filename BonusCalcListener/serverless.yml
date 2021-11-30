@@ -105,9 +105,13 @@ custom:
         - subnet-000b89c249f12a8ad
     staging:
       subnetIds:
-        - subnet-06d3de1bd9181b0d7
-        - subnet-0ed7d7713d1127656
+        - subnet-0ea0020a44b98a2ca # b-housing-staging
+        - subnet-0743d86e9b362fa38 # a-housing-staging
+      securityGroupIds:
+        - sg-0292b24504fdce1eb # allow_bonuscalc_db_traffic
     production:
       subnetIds:
-        - subnet-01d3657f97a243261
-        - subnet-0b7b8fea07efabf34
+        - subnet-0beb266003a56ca82 # a-housing-production
+        - subnet-06a697d86a9b6ed01 # b-housing-production
+      securityGroupIds:
+        - sg-064b1c3ec1577380b # allow_bonuscalc_db_traffic
