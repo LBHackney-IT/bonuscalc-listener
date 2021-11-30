@@ -42,6 +42,11 @@ namespace BonusCalcListener
 
             services.AddHttpClient();
             services.AddScoped<IUpdateExistingWorkOrderPayElements, UpdateExistingWorkOrderPayElementsUseCase>();
+            services.AddScoped<IPayElementGateway, PayElementGateway>();
+            services.AddScoped<ITimesheetGateway, TimesheetGateway>();
+            services.AddScoped<IMapPayElements, PayElementMapper>();
+
+
 
             // TODO: replace with Postgres services.AddScoped<IDbEntityGateway, DynamoDbEntityGateway>();
 
