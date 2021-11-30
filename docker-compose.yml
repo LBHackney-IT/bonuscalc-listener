@@ -33,9 +33,10 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=mypassword
       - DB_DATABASE=testdb
+      - TZ=Europe/London
     depends_on:
       - test-database
-  
+
   test-database:
     image: postgres:12
     ports:
