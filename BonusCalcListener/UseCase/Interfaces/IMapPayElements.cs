@@ -5,6 +5,6 @@ namespace BonusCalcListener.UseCase
 {
     public interface IMapPayElements
     {
-        PayElement BuildPayElement(WorkOrderOperativeSmvData eventData, Timesheet weekId);
+        PayElement BuildPayElement(WorkOrderOperativeSmvData eventData);
     }
 }

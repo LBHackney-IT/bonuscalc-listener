@@ -7,7 +7,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BonusCalcListener.Tests.UseCase
@@ -16,7 +18,6 @@ namespace BonusCalcListener.Tests.UseCase
     public class UpdateExistingWorkElementsUseCaseTests
     {
         private UpdateExistingWorkOrderPayElementsUseCase _sut;
-        private Mock<IPayElementGateway> _mockPayElementGateway;
         private Mock<ITimesheetGateway> _mockTimesheetGateway;
         private Mock<IMapPayElements> _mockPayElementsMapper;
         private Mock<IDbSaver> _mockDbSaver;
@@ -26,7 +27,6 @@ namespace BonusCalcListener.Tests.UseCase
         [SetUp]
         public void Setup()
         {
-            _mockPayElementGateway = new Mock<IPayElementGateway>();
             _mockTimesheetGateway = new Mock<ITimesheetGateway>();
             _mockPayElementsMapper = new Mock<IMapPayElements>();
             _mockDbSaver = new Mock<IDbSaver>();
@@ -34,7 +34,6 @@ namespace BonusCalcListener.Tests.UseCase
             _logger = new NullLogger<UpdateExistingWorkOrderPayElementsUseCase>();
 
             _sut = new UpdateExistingWorkOrderPayElementsUseCase(
-                _mockPayElementGateway.Object,
                 _mockTimesheetGateway.Object,
                 _mockPayElementsMapper.Object,
                 _mockDbSaver.Object,
@@ -45,15 +44,15 @@ namespace BonusCalcListener.Tests.UseCase
         [Test]
         public void ShouldAddPayElementWithValidRequest()
         {
-            var payElements = BonusCalcTestDataFactory.GeneratePayElements();
+            var timesheet = BonusCalcTestDataFactory.ValidTimesheet();
+            var payElements = timesheet.PayElements;
+            var productivePayElement = payElements.First(pe => pe.PayElementType.Id == 301);
+            var nonProductivePayElement = payElements.First(pe => pe.PayElementType.Id == 101);
 
             _mockTimesheetGateway.Setup(tsg => tsg.GetCurrentTimeSheetForOperative(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .Returns(Task.FromResult<Timesheet>(BonusCalcTestDataFactory.ValidTimesheet()));
+                .Returns(Task.FromResult<Timesheet>(timesheet));
 
-            _mockPayElementGateway.Setup(peg => peg.GetPayElementsByWorkOrderId(It.IsAny<string>(), It.IsAny<int>()))
-                .Returns(Task.FromResult(payElements));
-
-            _mockPayElementsMapper.Setup(pem => pem.BuildPayElement(It.IsAny<WorkOrderOperativeSmvData>(), It.IsAny<Timesheet>()))
+            _mockPayElementsMapper.Setup(pem => pem.BuildPayElement(It.IsAny<WorkOrderOperativeSmvData>()))
                 .Returns(_mockPayElement.Object);
 
             _mockDbSaver.Setup(db => db.SaveChangesAsync())
@@ -63,21 +62,24 @@ namespace BonusCalcListener.Tests.UseCase
             Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.ValidMessage()));
 
             // Assert
-            Assert.Contains(_mockPayElement.Object, payElements);
+            Assert.That(payElements, Contains.Item(_mockPayElement.Object));
+            Assert.That(payElements, Contains.Item(nonProductivePayElement));
+            Assert.That(payElements, Does.Not.Contain(productivePayElement));
             _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Once);
         }
 
+        [Test]
         public void ShouldAddPayElementWithNoAccessRequest()
         {
-            var payElements = BonusCalcTestDataFactory.GeneratePayElements();
+            var timesheet = BonusCalcTestDataFactory.ValidTimesheet();
+            var payElements = timesheet.PayElements;
+            var productivePayElement = payElements.First(pe => pe.PayElementType.Id == 301);
+            var nonProductivePayElement = payElements.First(pe => pe.PayElementType.Id == 101);
 
             _mockTimesheetGateway.Setup(tsg => tsg.GetCurrentTimeSheetForOperative(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .Returns(Task.FromResult<Timesheet>(BonusCalcTestDataFactory.ValidTimesheet()));
+                .Returns(Task.FromResult<Timesheet>(timesheet));
 
-            _mockPayElementGateway.Setup(peg => peg.GetPayElementsByWorkOrderId(It.IsAny<string>(), It.IsAny<int>()))
-                .Returns(Task.FromResult(payElements));
-
-            _mockPayElementsMapper.Setup(pem => pem.BuildPayElement(It.IsAny<WorkOrderOperativeSmvData>(), It.IsAny<Timesheet>()))
+            _mockPayElementsMapper.Setup(pem => pem.BuildPayElement(It.IsAny<WorkOrderOperativeSmvData>()))
                 .Returns(_mockPayElement.Object);
 
             _mockDbSaver.Setup(db => db.SaveChangesAsync())
@@ -87,22 +89,24 @@ namespace BonusCalcListener.Tests.UseCase
             Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.NoAccessMessage()));
 
             // Assert
-            Assert.Contains(_mockPayElement.Object, payElements);
+            Assert.That(payElements, Contains.Item(_mockPayElement.Object));
+            Assert.That(payElements, Contains.Item(nonProductivePayElement));
+            Assert.That(payElements, Does.Not.Contain(productivePayElement));
             _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Once);
         }
 
         [Test]
         public void ShouldNotAddPayElementWithCancelledRequest()
         {
-            var payElements = BonusCalcTestDataFactory.GeneratePayElements();
+            var timesheet = BonusCalcTestDataFactory.ValidTimesheet();
+            var payElements = timesheet.PayElements;
+            var productivePayElement = payElements.First(pe => pe.PayElementType.Id == 301);
+            var nonProductivePayElement = payElements.First(pe => pe.PayElementType.Id == 101);
 
             _mockTimesheetGateway.Setup(tsg => tsg.GetCurrentTimeSheetForOperative(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .Returns(Task.FromResult<Timesheet>(BonusCalcTestDataFactory.ValidTimesheet()));
+                .Returns(Task.FromResult<Timesheet>(timesheet));
 
-            _mockPayElementGateway.Setup(peg => peg.GetPayElementsByWorkOrderId(It.IsAny<string>(), It.IsAny<int>()))
-                .Returns(Task.FromResult(payElements));
-
-            _mockPayElementsMapper.Setup(pem => pem.BuildPayElement(It.IsAny<WorkOrderOperativeSmvData>(), It.IsAny<Timesheet>()))
+            _mockPayElementsMapper.Setup(pem => pem.BuildPayElement(It.IsAny<WorkOrderOperativeSmvData>()))
                 .Returns(_mockPayElement.Object);
 
             _mockDbSaver.Setup(db => db.SaveChangesAsync())
@@ -112,22 +116,24 @@ namespace BonusCalcListener.Tests.UseCase
             Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.CancelledMessage()));
 
             // Assert
-            Assert.IsEmpty(payElements);
+            Assert.That(payElements, Does.Not.Contain(_mockPayElement.Object));
+            Assert.That(payElements, Contains.Item(nonProductivePayElement));
+            Assert.That(payElements, Does.Not.Contain(productivePayElement));
             _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Once);
         }
 
         [Test]
         public void ShouldNotAddPayElementWithUnknownRequest()
         {
-            var payElements = BonusCalcTestDataFactory.GeneratePayElements();
+            var timesheet = BonusCalcTestDataFactory.ValidTimesheet();
+            var payElements = timesheet.PayElements;
+            var productivePayElement = payElements.First(pe => pe.PayElementType.Id == 301);
+            var nonProductivePayElement = payElements.First(pe => pe.PayElementType.Id == 101);
 
             _mockTimesheetGateway.Setup(tsg => tsg.GetCurrentTimeSheetForOperative(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .Returns(Task.FromResult<Timesheet>(BonusCalcTestDataFactory.ValidTimesheet()));
+                .Returns(Task.FromResult<Timesheet>(timesheet));
 
-            _mockPayElementGateway.Setup(peg => peg.GetPayElementsByWorkOrderId(It.IsAny<string>(), It.IsAny<int>()))
-                .Returns(Task.FromResult(payElements));
-
-            _mockPayElementsMapper.Setup(pem => pem.BuildPayElement(It.IsAny<WorkOrderOperativeSmvData>(), It.IsAny<Timesheet>()))
+            _mockPayElementsMapper.Setup(pem => pem.BuildPayElement(It.IsAny<WorkOrderOperativeSmvData>()))
                 .Returns(_mockPayElement.Object);
 
             _mockDbSaver.Setup(db => db.SaveChangesAsync())
@@ -137,7 +143,9 @@ namespace BonusCalcListener.Tests.UseCase
             Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.UnknownMessage()));
 
             // Assert
-            Assert.IsEmpty(payElements);
+            Assert.That(payElements, Does.Not.Contain(_mockPayElement.Object));
+            Assert.That(payElements, Contains.Item(nonProductivePayElement));
+            Assert.That(payElements, Does.Not.Contain(productivePayElement));
             _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Once);
         }
 
@@ -147,9 +155,6 @@ namespace BonusCalcListener.Tests.UseCase
             // Arrange
             _mockTimesheetGateway.Setup(tsg => tsg.GetCurrentTimeSheetForOperative(It.IsAny<string>(), It.IsAny<DateTime>()))
                 .Returns(Task.FromResult<Timesheet>(null));
-
-            _mockPayElementGateway.Setup(peg => peg.GetPayElementsByWorkOrderId(It.IsAny<string>(), It.IsAny<int>()))
-                .Returns(Task.FromResult(BonusCalcTestDataFactory.GeneratePayElements()));
 
             _mockDbSaver.Setup(db => db.SaveChangesAsync())
                 .Verifiable();
@@ -167,9 +172,6 @@ namespace BonusCalcListener.Tests.UseCase
             // Arrange
             _mockTimesheetGateway.Setup(tsg => tsg.GetCurrentTimeSheetForOperative(It.IsAny<string>(), It.IsAny<DateTime>()))
                 .Returns(Task.FromResult<Timesheet>(null));
-
-            _mockPayElementGateway.Setup(peg => peg.GetPayElementsByWorkOrderId(It.IsAny<string>(), It.IsAny<int>()))
-                .Returns(Task.FromResult(BonusCalcTestDataFactory.GeneratePayElements()));
 
             _mockDbSaver.Setup(db => db.SaveChangesAsync())
                 .Verifiable();

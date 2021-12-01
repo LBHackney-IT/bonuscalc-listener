@@ -1,18 +1,16 @@
 using BonusCalcListener.Boundary;
-using BonusCalcListener.Gateway;
 using BonusCalcListener.Gateway.Interfaces;
 using BonusCalcListener.Infrastructure;
 using BonusCalcListener.UseCase.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BonusCalcListener.UseCase
 {
     public class UpdateExistingWorkOrderPayElementsUseCase : IUpdateExistingWorkOrderPayElements
     {
-        private readonly IPayElementGateway _payElementGateway;
         private readonly ITimesheetGateway _timesheetGateway;
         private readonly IMapPayElements _payElementMapper;
         private readonly IDbSaver _dbSaver;
@@ -20,9 +18,8 @@ namespace BonusCalcListener.UseCase
 
         const int REACTIVE_REPAIRS_PAY_ELEMENT_TYPE = 301;
 
-        public UpdateExistingWorkOrderPayElementsUseCase(IPayElementGateway payElementGateway, ITimesheetGateway timesheetGateway, IMapPayElements payElementMapper, IDbSaver dbSaver, ILogger<UpdateExistingWorkOrderPayElementsUseCase> logger)
+        public UpdateExistingWorkOrderPayElementsUseCase(ITimesheetGateway timesheetGateway, IMapPayElements payElementMapper, IDbSaver dbSaver, ILogger<UpdateExistingWorkOrderPayElementsUseCase> logger)
         {
-            _payElementGateway = payElementGateway;
             _timesheetGateway = timesheetGateway;
             _payElementMapper = payElementMapper;
             _dbSaver = dbSaver;
@@ -33,9 +30,19 @@ namespace BonusCalcListener.UseCase
         {
             var data = message.EventData;
 
+            if (data.WorkOrderId == null)
+            {
+                throw new ArgumentNullException("WorkOrderId");
+            }
+
             _logger.LogInformation($"Starting to process update to work order ID: {data.WorkOrderId}");
 
-            //1a. Get the timesheet for the operative based on the opId and closed time of the work order
+            if (data.ClosedTime == null)
+            {
+                throw new ArgumentNullException("ClosedTime");
+            }
+
+            // Get the timesheet based on the operative id and closed time of the work order
             var operativeTimesheet = await _timesheetGateway.GetCurrentTimeSheetForOperative(data.OperativePrn, data.ClosedTime);
 
             if (operativeTimesheet == null)
@@ -45,24 +52,17 @@ namespace BonusCalcListener.UseCase
 
             _logger.LogInformation($"Found timesheet {operativeTimesheet.Id} for {data.WorkOrderId}");
 
-            //1b. Get the work order (if any) from the database
-            var existingPayElementCollection = await _payElementGateway.GetPayElementsByWorkOrderId(data.WorkOrderId, REACTIVE_REPAIRS_PAY_ELEMENT_TYPE);
+            // Ensure that the pay elements list exists
+            operativeTimesheet.PayElements ??= new List<PayElement>();
 
-            //2. If any have been found, remove them
-            if (existingPayElementCollection.Any())
-            {
-                _logger.LogInformation($"Found an existing pay element(s) for WO {data.WorkOrderId} which will be overwritten");
-                existingPayElementCollection.Clear();
-            }
+            // Remove any existing pay elements for the work order
+            operativeTimesheet.PayElements.RemoveAll(pe => pe.WorkOrder == data.WorkOrderId);
 
-            // Only create a pay element if the work order was completed or is no access
+            // Check the status code for a valid state - only 'Completed' and 'No Access' should be recorded
             if (data.WorkOrderStatusCode == RepairsStatusCodes.Completed || data.WorkOrderStatusCode == RepairsStatusCodes.NoAccess)
             {
-                //3a. Create pay element
-                var npe = _payElementMapper.BuildPayElement(message.EventData, operativeTimesheet);
-
-                //3b. Add the new elements & save
-                existingPayElementCollection.Add(npe);
+                var npe = _payElementMapper.BuildPayElement(message.EventData);
+                operativeTimesheet.PayElements.Add(npe);
 
                 _logger.LogInformation($"Added {npe.Value} SMVs to operative {data.OperativePrn} for work order {data.WorkOrderId}!");
             }
