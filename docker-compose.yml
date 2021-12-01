@@ -11,10 +11,22 @@ services:
     ports:
       - 3000:3000
     environment:
-     - ENVIRONMENT=LocalDevelopment
-     - AWS_REGION=eu-west-2
-     - AWS_ACCESS_KEY_ID=local
-     - AWS_SECRET_ACCESS_KEY=local
+      - ENVIRONMENT=LocalDevelopment
+      - AWS_REGION=eu-west-2
+      - AWS_ACCESS_KEY_ID=local
+      - AWS_SECRET_ACCESS_KEY=local
+      - CONNECTION_STRING=Host=dev-database;Port=5432;Database=testdb;Username=postgres;Password=mypassword
+    depends_on:
+      - dev-database
+
+  dev-database:
+    image: postgres:12
+    ports:
+      - 5432:5432
+    env_file:
+      - database.env
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
 
   bonus-calc-listener-test:
     image: bonus-calc-listener-test
@@ -44,4 +56,4 @@ services:
     env_file:
       - database.env
     volumes:
-      - ./database/init-testdb.sql:/docker-entrypoint-initdb.d/init-testdb.sql
+      - ./database:/docker-entrypoint-initdb.d

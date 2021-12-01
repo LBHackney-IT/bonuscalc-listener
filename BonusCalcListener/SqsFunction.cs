@@ -43,7 +43,6 @@ namespace BonusCalcListener
 
             services.AddHttpClient();
             services.AddScoped<IUpdateExistingWorkOrderPayElements, UpdateExistingWorkOrderPayElementsUseCase>();
-            services.AddScoped<IPayElementGateway, PayElementGateway>();
             services.AddScoped<ITimesheetGateway, TimesheetGateway>();
             services.AddScoped<IMapPayElements, PayElementMapper>();
             services.AddScoped<IDbSaver, DbSaver>();
@@ -56,7 +55,7 @@ namespace BonusCalcListener
 
 
         /// <summary>
-        /// This method is called for every Lambda invocation. This method takes in an SQS event object and can be used 
+        /// This method is called for every Lambda invocation. This method takes in an SQS event object and can be used
         /// to respond to SQS messages.
         /// </summary>
         /// <param name="evnt"></param>

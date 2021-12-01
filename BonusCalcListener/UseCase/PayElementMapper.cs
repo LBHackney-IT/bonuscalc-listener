@@ -8,7 +8,7 @@ namespace BonusCalcListener.UseCase
     {
         const int REACTIVE_REPAIRS_TYPE = 301;
 
-        public PayElement BuildPayElement(WorkOrderOperativeSmvData eventData, Timesheet operativeTimesheet)
+        public PayElement BuildPayElement(WorkOrderOperativeSmvData eventData)
         {
             var operativeJobSmvMinutes = 0.0m;
             var operativeJobSmvHours = 0.0m;
@@ -25,7 +25,6 @@ namespace BonusCalcListener.UseCase
 
             return new PayElement
             {
-                TimesheetId = operativeTimesheet.Id,
                 PayElementTypeId = REACTIVE_REPAIRS_TYPE,
                 WorkOrder = eventData.WorkOrderId,
                 Address = eventData.Address,

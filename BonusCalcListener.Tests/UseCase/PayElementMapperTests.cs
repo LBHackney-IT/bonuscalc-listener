@@ -18,16 +18,15 @@ namespace BonusCalcListener.Tests.UseCase
         private readonly Fixture _fixture = new Fixture();
 
         [Test]
-        public void ShouldThrowWithInvalidArguments_Closedtime()
+        public void ShouldThrowWithInvalidArguments_ClosedTime()
         {
             // Arrange
-            var timesheet = _fixture.Create<Timesheet>();
             var evtData = _fixture.Build<WorkOrderOperativeSmvData>()
                 .Without(e => e.ClosedTime)
                 .Create();
 
             // Act + Assert
-            _sut.Invoking(s => s.BuildPayElement(evtData, timesheet))
+            _sut.Invoking(s => s.BuildPayElement(evtData))
                 .Should().Throw<ArgumentException>()
                 .WithMessage($"Cannot create a pay element with null closed time, WorkOrder: {evtData.WorkOrderId}, operative: {evtData.OperativePrn}");
         }
@@ -36,13 +35,12 @@ namespace BonusCalcListener.Tests.UseCase
         public void ShouldThrowWithInvalidArguments_JobPercentage()
         {
             // Arrange
-            var timesheet = _fixture.Create<Timesheet>();
             var evtData = _fixture.Build<WorkOrderOperativeSmvData>()
                 .With(e => e.JobPercentage, -1d)
                 .Create();
 
             // Act + Assert
-            _sut.Invoking(s => s.BuildPayElement(evtData, timesheet))
+            _sut.Invoking(s => s.BuildPayElement(evtData))
                 .Should().Throw<ArgumentException>()
                 .WithMessage($"Cannot have a job percentage of zero or less than zero, WorkOrder: {evtData.WorkOrderId}");
 
@@ -52,7 +50,6 @@ namespace BonusCalcListener.Tests.UseCase
         public void ShouldCreatePayElementWithValidArguments()
         {
             // Arrange
-            var timesheet = _fixture.Create<Timesheet>();
             var evtData = _fixture.Create<WorkOrderOperativeSmvData>();
             evtData.WorkOrderStatusCode = 50;
             evtData.StandardMinuteValue = 300;
@@ -60,10 +57,9 @@ namespace BonusCalcListener.Tests.UseCase
             evtData.ClosedTime = new DateTime(2021, 11, 08, 14, 32, 01);
 
             // Act
-            var result = _sut.BuildPayElement(evtData, timesheet);
+            var result = _sut.BuildPayElement(evtData);
 
             // Assert
-            result.TimesheetId.Should().Be(timesheet.Id);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
@@ -83,7 +79,6 @@ namespace BonusCalcListener.Tests.UseCase
         public void ShouldCreatePayElementWithZeroValue()
         {
             // Arrange
-            var timesheet = _fixture.Create<Timesheet>();
             var evtData = _fixture.Create<WorkOrderOperativeSmvData>();
             evtData.WorkOrderStatusCode = 1000;
             evtData.StandardMinuteValue = 300;
@@ -91,10 +86,9 @@ namespace BonusCalcListener.Tests.UseCase
             evtData.ClosedTime = new DateTime(2021, 11, 08, 14, 32, 01);
 
             // Act
-            var result = _sut.BuildPayElement(evtData, timesheet);
+            var result = _sut.BuildPayElement(evtData);
 
             // Assert
-            result.TimesheetId.Should().Be(timesheet.Id);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
