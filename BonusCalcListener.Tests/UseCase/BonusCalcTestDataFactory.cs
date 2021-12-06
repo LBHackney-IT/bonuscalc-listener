@@ -123,25 +123,35 @@ namespace BonusCalcListener.Tests.UseCase
 
         public static EntityEventSns ValidMessage()
         {
-            return SnsMessage(RepairsStatusCodes.Completed);
+            var closedTime = new DateTime(2021, 11, 09, 21, 28, 00);
+            return SnsMessage(RepairsStatusCodes.Completed, closedTime);
         }
 
         public static EntityEventSns NoAccessMessage()
         {
-            return SnsMessage(RepairsStatusCodes.NoAccess);
+            var closedTime = new DateTime(2021, 11, 09, 21, 28, 00);
+            return SnsMessage(RepairsStatusCodes.NoAccess, closedTime);
         }
 
         public static EntityEventSns CancelledMessage()
         {
-            return SnsMessage(RepairsStatusCodes.Cancelled);
+            var closedTime = new DateTime(2021, 11, 09, 21, 28, 00);
+            return SnsMessage(RepairsStatusCodes.Cancelled, closedTime);
         }
 
         public static EntityEventSns UnknownMessage()
         {
-            return SnsMessage(999);
+            var closedTime = new DateTime(2021, 11, 09, 21, 28, 00);
+            return SnsMessage(999, closedTime);
         }
 
-        private static EntityEventSns SnsMessage(int WorkOrderStatusCode)
+        public static EntityEventSns OldMessage()
+        {
+            var closedTime = new DateTime(2021, 10, 24, 21, 28, 00);
+            return SnsMessage(RepairsStatusCodes.Completed, closedTime);
+        }
+
+        private static EntityEventSns SnsMessage(int workOrderStatusCode, DateTime closedTime)
         {
             return new EntityEventSns
             {
@@ -151,12 +161,12 @@ namespace BonusCalcListener.Tests.UseCase
                 EventData = new WorkOrderOperativeSmvData
                 {
                     WorkOrderId = "10003773",
-                    WorkOrderStatusCode = WorkOrderStatusCode,
+                    WorkOrderStatusCode = workOrderStatusCode,
                     Address = "34 DeBeauvoir Square, London, N4 2FL",
                     StandardMinuteValue = 100,
                     OperativePrn = "4044",
                     JobPercentage = 50,
-                    ClosedTime = new DateTime(2021, 11, 09, 21, 28, 00)
+                    ClosedTime = closedTime
                 }
             };
         }
