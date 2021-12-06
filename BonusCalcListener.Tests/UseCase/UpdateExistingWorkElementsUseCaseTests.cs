@@ -150,6 +150,33 @@ namespace BonusCalcListener.Tests.UseCase
         }
 
         [Test]
+        public void ShouldNotAddPayElementWithOldRequest()
+        {
+            var timesheet = BonusCalcTestDataFactory.ValidTimesheet();
+            var payElements = timesheet.PayElements;
+            var productivePayElement = payElements.First(pe => pe.PayElementType.Id == 301);
+            var nonProductivePayElement = payElements.First(pe => pe.PayElementType.Id == 101);
+
+            _mockTimesheetGateway.Setup(tsg => tsg.GetCurrentTimeSheetForOperative(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(Task.FromResult<Timesheet>(timesheet));
+
+            _mockPayElementsMapper.Setup(pem => pem.BuildPayElement(It.IsAny<WorkOrderOperativeSmvData>()))
+                .Returns(_mockPayElement.Object);
+
+            _mockDbSaver.Setup(db => db.SaveChangesAsync())
+                .Verifiable();
+
+            // Act
+            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.OldMessage()));
+
+            // Assert
+            Assert.That(payElements, Does.Not.Contain(_mockPayElement.Object));
+            Assert.That(payElements, Contains.Item(nonProductivePayElement));
+            Assert.That(payElements, Contains.Item(productivePayElement));
+            _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Never);
+        }
+
+        [Test]
         public void ShouldNotAddAnyPayElementsIfTimesheetCannotBeFound()
         {
             // Arrange

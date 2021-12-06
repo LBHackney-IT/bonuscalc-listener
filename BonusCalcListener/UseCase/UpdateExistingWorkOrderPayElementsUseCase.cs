@@ -16,7 +16,10 @@ namespace BonusCalcListener.UseCase
         private readonly IDbSaver _dbSaver;
         private readonly ILogger<UpdateExistingWorkOrderPayElementsUseCase> _logger;
 
-        const int REACTIVE_REPAIRS_PAY_ELEMENT_TYPE = 301;
+        private static DateTime BonusSchemeStartTime()
+        {
+            return new DateTime(2021, 11, 1, 0, 0, 0, DateTimeKind.Utc);
+        }
 
         public UpdateExistingWorkOrderPayElementsUseCase(ITimesheetGateway timesheetGateway, IMapPayElements payElementMapper, IDbSaver dbSaver, ILogger<UpdateExistingWorkOrderPayElementsUseCase> logger)
         {
@@ -40,6 +43,11 @@ namespace BonusCalcListener.UseCase
             if (data.ClosedTime == null)
             {
                 throw new ArgumentNullException("ClosedTime");
+            }
+
+            if (data.ClosedTime < BonusSchemeStartTime())
+            {
+                return; // This is a work order from before the restarting of the bonus scheme
             }
 
             // Get the timesheet based on the operative id and closed time of the work order
