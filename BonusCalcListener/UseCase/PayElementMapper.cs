@@ -7,15 +7,30 @@ namespace BonusCalcListener.UseCase
     public class PayElementMapper : IMapPayElements
     {
         const int REACTIVE_REPAIRS_TYPE = 301;
+        const int OUT_OF_HOURS_JOB_TYPE = 501;
 
         public PayElement BuildPayElement(WorkOrderOperativeSmvData eventData)
         {
+            if (!eventData.ClosedTime.HasValue)
+                throw new ArgumentException($"Cannot create a pay element with null closed time, WorkOrder: {eventData.WorkOrderId}, operative: {eventData.OperativePrn}");
+
+            if (!eventData.JobPercentage.HasValue || eventData.JobPercentage <= 0)
+                throw new ArgumentException($"Cannot have a job percentage of zero or less than zero, WorkOrder: {eventData.WorkOrderId}");
+
+            if (eventData.IsOutOfHours.HasValue && (bool) eventData.IsOutOfHours)
+            {
+                return BuildOutOfHoursPayElement(eventData);
+            }
+            else
+            {
+                return BuildReactivePayElement(eventData);
+            }
+        }
+
+        private PayElement BuildReactivePayElement(WorkOrderOperativeSmvData eventData)
+        {
             var operativeJobSmvMinutes = 0.0m;
             var operativeJobSmvHours = 0.0m;
-
-            if (!eventData.ClosedTime.HasValue) throw new ArgumentException($"Cannot create a pay element with null closed time, WorkOrder: {eventData.WorkOrderId}, operative: {eventData.OperativePrn}");
-
-            if (!eventData.JobPercentage.HasValue || eventData.JobPercentage <= 0) throw new ArgumentException($"Cannot have a job percentage of zero or less than zero, WorkOrder: {eventData.WorkOrderId}");
 
             if (eventData.WorkOrderStatusCode == RepairsStatusCodes.Completed)
             {
@@ -39,6 +54,35 @@ namespace BonusCalcListener.UseCase
                 Sunday = eventData.ClosedTime.Value.DayOfWeek == DayOfWeek.Sunday ? operativeJobSmvHours : 0.0m,
                 Duration = operativeJobSmvHours,
                 Value = operativeJobSmvMinutes,
+                ReadOnly = true
+            };
+        }
+
+        private PayElement BuildOutOfHoursPayElement(WorkOrderOperativeSmvData eventData)
+        {
+            var operativeCost = 0.0m;
+
+            if (eventData.WorkOrderStatusCode == RepairsStatusCodes.Completed)
+            {
+                operativeCost = (decimal) (eventData.OperativeCost * eventData.JobPercentage / 100 ?? 0);
+            }
+
+            return new PayElement
+            {
+                PayElementTypeId = OUT_OF_HOURS_JOB_TYPE,
+                WorkOrder = eventData.WorkOrderId,
+                Address = eventData.Address,
+                Comment = eventData.Description,
+                ClosedAt = eventData.ClosedTime,
+                Monday = 0.0m,
+                Tuesday = 0.0m,
+                Wednesday = 0.0m,
+                Thursday = 0.0m,
+                Friday = 0.0m,
+                Saturday = 0.0m,
+                Sunday = 0.0m,
+                Duration = 0.0m,
+                Value = operativeCost,
                 ReadOnly = true
             };
         }
