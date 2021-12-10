@@ -15,5 +15,9 @@ namespace BonusCalcListener.Boundary
         public string OperativePrn { get; set; }
         public double? JobPercentage { get; set; }
         public DateTime? ClosedTime { get; set; }
+
+        // Out of hours data
+        public bool? IsOutOfHours { get; set; }
+        public double? OperativeCost { get; set; }
     }
 }

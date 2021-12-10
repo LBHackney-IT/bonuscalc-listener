@@ -55,11 +55,14 @@ namespace BonusCalcListener.Tests.UseCase
             evtData.StandardMinuteValue = 300;
             evtData.JobPercentage = 50;
             evtData.ClosedTime = new DateTime(2021, 11, 08, 14, 32, 01);
+            evtData.IsOutOfHours = false;
+            evtData.OperativeCost = 0;
 
             // Act
             var result = _sut.BuildPayElement(evtData);
 
             // Assert
+            result.PayElementTypeId.Should().Be(301);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
@@ -84,11 +87,78 @@ namespace BonusCalcListener.Tests.UseCase
             evtData.StandardMinuteValue = 300;
             evtData.JobPercentage = 50;
             evtData.ClosedTime = new DateTime(2021, 11, 08, 14, 32, 01);
+            evtData.IsOutOfHours = false;
+            evtData.OperativeCost = 0;
 
             // Act
             var result = _sut.BuildPayElement(evtData);
 
             // Assert
+            result.PayElementTypeId.Should().Be(301);
+            result.WorkOrder.Should().Be(evtData.WorkOrderId);
+            result.Address.Should().Be(evtData.Address);
+            result.Comment.Should().Be(evtData.Description);
+            result.ClosedAt.Should().Be(evtData.ClosedTime);
+            result.Monday.Should().Be(0.0m);
+            result.Tuesday.Should().Be(0.0m);
+            result.Wednesday.Should().Be(0.0m);
+            result.Thursday.Should().Be(0.0m);
+            result.Friday.Should().Be(0.0m);
+            result.Saturday.Should().Be(0.0m);
+            result.Sunday.Should().Be(0.0m);
+            result.Duration.Should().Be(0.0m);
+            result.Value.Should().Be(0.0m);
+        }
+
+        [Test]
+        public void ShouldCreateOutOfHoursPayElementWithValidArguments()
+        {
+            // Arrange
+            var evtData = _fixture.Create<WorkOrderOperativeSmvData>();
+            evtData.WorkOrderStatusCode = 50;
+            evtData.StandardMinuteValue = 0;
+            evtData.JobPercentage = 50;
+            evtData.ClosedTime = new DateTime(2021, 11, 08, 14, 32, 01);
+            evtData.IsOutOfHours = true;
+            evtData.OperativeCost = 68;
+
+            // Act
+            var result = _sut.BuildPayElement(evtData);
+
+            // Assert
+            result.PayElementTypeId.Should().Be(501);
+            result.WorkOrder.Should().Be(evtData.WorkOrderId);
+            result.Address.Should().Be(evtData.Address);
+            result.Comment.Should().Be(evtData.Description);
+            result.ClosedAt.Should().Be(evtData.ClosedTime);
+            result.Monday.Should().Be(0.0m);
+            result.Tuesday.Should().Be(0.0m);
+            result.Wednesday.Should().Be(0.0m);
+            result.Thursday.Should().Be(0.0m);
+            result.Friday.Should().Be(0.0m);
+            result.Saturday.Should().Be(0.0m);
+            result.Sunday.Should().Be(0.0m);
+            result.Duration.Should().Be(0.0m);
+            result.Value.Should().Be(34.0m);
+        }
+
+        [Test]
+        public void ShouldCreateOutOfHoursPayElementWithZeroValue()
+        {
+            // Arrange
+            var evtData = _fixture.Create<WorkOrderOperativeSmvData>();
+            evtData.WorkOrderStatusCode = 1000;
+            evtData.StandardMinuteValue = 0;
+            evtData.JobPercentage = 50;
+            evtData.ClosedTime = new DateTime(2021, 11, 08, 14, 32, 01);
+            evtData.IsOutOfHours = true;
+            evtData.OperativeCost = 68;
+
+            // Act
+            var result = _sut.BuildPayElement(evtData);
+
+            // Assert
+            result.PayElementTypeId.Should().Be(501);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
