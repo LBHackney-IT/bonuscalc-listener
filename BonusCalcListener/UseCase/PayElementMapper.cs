@@ -7,7 +7,10 @@ namespace BonusCalcListener.UseCase
     public class PayElementMapper : IMapPayElements
     {
         const int REACTIVE_REPAIRS_TYPE = 301;
+        const int OVERTIME_JOB_TYPE = 401;
         const int OUT_OF_HOURS_JOB_TYPE = 501;
+
+        private static string OVERTIME_RATE = Environment.GetEnvironmentVariable("OVERTIME_RATE") ?? "21.60";
 
         public PayElement BuildPayElement(WorkOrderOperativeSmvData eventData)
         {
@@ -20,6 +23,10 @@ namespace BonusCalcListener.UseCase
             if (eventData.IsOutOfHours.HasValue && (bool) eventData.IsOutOfHours)
             {
                 return BuildOutOfHoursPayElement(eventData);
+            }
+            else if (eventData.IsOvertime.HasValue && (bool) eventData.IsOvertime)
+            {
+                return BuildOvertimePayElement(eventData);
             }
             else
             {
@@ -70,6 +77,35 @@ namespace BonusCalcListener.UseCase
             return new PayElement
             {
                 PayElementTypeId = OUT_OF_HOURS_JOB_TYPE,
+                WorkOrder = eventData.WorkOrderId,
+                Address = eventData.Address,
+                Comment = eventData.Description,
+                ClosedAt = eventData.ClosedTime,
+                Monday = 0.0m,
+                Tuesday = 0.0m,
+                Wednesday = 0.0m,
+                Thursday = 0.0m,
+                Friday = 0.0m,
+                Saturday = 0.0m,
+                Sunday = 0.0m,
+                Duration = 0.0m,
+                Value = operativeCost,
+                ReadOnly = true
+            };
+        }
+
+        private PayElement BuildOvertimePayElement(WorkOrderOperativeSmvData eventData)
+        {
+            var operativeCost = 0.0m;
+
+            if (eventData.WorkOrderStatusCode == RepairsStatusCodes.Completed)
+            {
+                operativeCost = Convert.ToDecimal(OVERTIME_RATE);
+            }
+
+            return new PayElement
+            {
+                PayElementTypeId = OVERTIME_JOB_TYPE,
                 WorkOrder = eventData.WorkOrderId,
                 Address = eventData.Address,
                 Comment = eventData.Description,

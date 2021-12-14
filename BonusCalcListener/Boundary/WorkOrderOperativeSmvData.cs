@@ -19,5 +19,8 @@ namespace BonusCalcListener.Boundary
         // Out of hours data
         public bool? IsOutOfHours { get; set; }
         public double? OperativeCost { get; set; }
+
+        // Overtime data
+        public bool? IsOvertime { get; set; }
     }
 }
