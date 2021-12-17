@@ -114,3 +114,11 @@ resource "aws_ssm_parameter" "repairs_sqs_queue_arn" {
   type  = "String"
   value = aws_sqs_queue.repairs_queue.arn
 }
+
+module "bonuscalc_listener_cw_dashboard" {
+  source                     = "github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/cloudwatch/dashboards/listener-dashboard"
+  environment_name           = var.environment_name
+  listener_name              = "bonuscalc-listener"
+  sqs_queue_name             = aws_sqs_queue.repairs_queue.name
+  sqs_dead_letter_queue_name = aws_sqs_queue.repairs_dead_letter_queue.name
+}
