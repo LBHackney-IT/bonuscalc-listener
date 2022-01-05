@@ -1,5 +1,6 @@
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
+using Amazon.XRay.Recorder.Core.Internal.Entities;
 using BonusCalcListener.Boundary;
 using BonusCalcListener.Factories;
 using BonusCalcListener.Gateway;
@@ -83,7 +84,9 @@ namespace BonusCalcListener
 
             var entityEvent = JsonSerializer.Deserialize<EntityEventSns>(message.Body, _jsonOptions);
 
-            using (Logger.BeginScope("CorrelationId: {CorrelationId}", entityEvent.CorrelationId))
+            var traceUsingXray = message.Attributes.TryGetValue("AWSTraceHeader", out string traceHeader);
+
+            using (Logger.BeginScope("CorrelationId: {CorrelationId}", traceUsingXray ? TraceHeader.FromString(traceHeader).RootTraceId : Guid.NewGuid().ToString()))
             {
                 try
                 {

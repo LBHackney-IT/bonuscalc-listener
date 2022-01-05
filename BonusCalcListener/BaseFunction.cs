@@ -1,3 +1,5 @@
+using Amazon.XRay.Recorder.Core;
+using Amazon.XRay.Recorder.Core.Strategies;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using BonusCalcListener.Infrastructure;
 using Hackney.Core.Logging;
@@ -36,6 +38,10 @@ namespace BonusCalcListener
 
             Configure(builder);
             Configuration = builder.Build();
+
+            AWSXRayRecorder.InitializeInstance(Configuration);
+            AWSXRayRecorder.Instance.ContextMissingStrategy = ContextMissingStrategy.LOG_ERROR;
+
             services.AddSingleton<IConfiguration>(Configuration);
 
             services.ConfigureLambdaLogging(Configuration);
