@@ -1,3 +1,4 @@
+using BonusCalcListener.Domain;
 using System;
 
 namespace BonusCalcListener.Boundary
@@ -22,5 +23,6 @@ namespace BonusCalcListener.Boundary
 
         // Overtime data
         public bool? IsOvertime { get; set; }
+        public PaymentType? PaymentType { get; set; }
     }
 }

@@ -68,6 +68,34 @@ namespace BonusCalcListener.Tests.UseCase
             _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Once);
         }
 
+        [TestCase(Domain.PaymentType.Overtime)]
+        [TestCase(Domain.PaymentType.Bonus)]
+        public void WhenPaymentTypeNotCloseToBase_ShouldAddPayElementWithValidRequest(Domain.PaymentType paymentType)
+        {
+            var timesheet = BonusCalcTestDataFactory.ValidTimesheet();
+            var payElements = timesheet.PayElements;
+            var productivePayElement = payElements.First(pe => pe.PayElementType.Id == 301);
+            var nonProductivePayElement = payElements.First(pe => pe.PayElementType.Id == 101);
+
+            _mockTimesheetGateway.Setup(tsg => tsg.GetCurrentTimeSheetForOperative(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(Task.FromResult<Timesheet>(timesheet));
+
+            _mockPayElementsMapper.Setup(pem => pem.BuildPayElement(It.IsAny<WorkOrderOperativeSmvData>()))
+                .Returns(_mockPayElement.Object);
+
+            _mockDbSaver.Setup(db => db.SaveChangesAsync())
+                .Verifiable();
+
+            var message = BonusCalcTestDataFactory.ValidMessage();
+            message.EventData.PaymentType = paymentType;
+
+            // Act
+            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(message));
+
+            // Assert
+            _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Once);
+        }
+
         [Test]
         public void ShouldAddPayElementWithNoAccessRequest()
         {
@@ -120,6 +148,33 @@ namespace BonusCalcListener.Tests.UseCase
             Assert.That(payElements, Contains.Item(nonProductivePayElement));
             Assert.That(payElements, Does.Not.Contain(productivePayElement));
             _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Once);
+        }
+
+        [Test]
+        public void ShouldNotAddPayElementWithPaymentTypeCloseToBase()
+        {
+            var timesheet = BonusCalcTestDataFactory.ValidTimesheet();
+            var payElements = timesheet.PayElements;
+            var productivePayElement = payElements.First(pe => pe.PayElementType.Id == 301);
+            var nonProductivePayElement = payElements.First(pe => pe.PayElementType.Id == 101);
+
+            _mockTimesheetGateway.Setup(tsg => tsg.GetCurrentTimeSheetForOperative(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns(Task.FromResult<Timesheet>(timesheet));
+
+            _mockPayElementsMapper.Setup(pem => pem.BuildPayElement(It.IsAny<WorkOrderOperativeSmvData>()))
+                .Returns(_mockPayElement.Object);
+
+            _mockDbSaver.Setup(db => db.SaveChangesAsync())
+                .Verifiable();
+
+            var message = BonusCalcTestDataFactory.ValidMessage();
+            message.EventData.PaymentType = Domain.PaymentType.CloseToBase;
+
+            // Act
+            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(message));
+
+            // Assert
+            _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Never);
         }
 
         [Test]

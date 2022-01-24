@@ -1,4 +1,5 @@
 using BonusCalcListener.Boundary;
+using BonusCalcListener.Domain;
 using BonusCalcListener.Infrastructure;
 using System;
 
@@ -6,10 +7,6 @@ namespace BonusCalcListener.UseCase
 {
     public class PayElementMapper : IMapPayElements
     {
-        const int REACTIVE_REPAIRS_TYPE = 301;
-        const int OVERTIME_JOB_TYPE = 401;
-        const int OUT_OF_HOURS_JOB_TYPE = 501;
-
         private static string OVERTIME_RATE = Environment.GetEnvironmentVariable("OVERTIME_RATE") ?? "21.60";
 
         public PayElement BuildPayElement(WorkOrderOperativeSmvData eventData)
@@ -24,7 +21,7 @@ namespace BonusCalcListener.UseCase
             {
                 return BuildOutOfHoursPayElement(eventData);
             }
-            else if (eventData.IsOvertime.HasValue && (bool) eventData.IsOvertime)
+            else if (EventIsOvertime(eventData))
             {
                 return BuildOvertimePayElement(eventData);
             }
@@ -32,6 +29,18 @@ namespace BonusCalcListener.UseCase
             {
                 return BuildReactivePayElement(eventData);
             }
+        }
+
+        private static bool EventIsOvertime(WorkOrderOperativeSmvData eventData)
+        {
+            if (eventData.PaymentType == null)
+            {
+                // old check
+                return eventData.IsOvertime.HasValue && (bool) eventData.IsOvertime;
+            }
+
+            // new check using PaymentType enum
+            return eventData.PaymentType == Domain.PaymentType.Overtime;
         }
 
         private PayElement BuildReactivePayElement(WorkOrderOperativeSmvData eventData)
@@ -47,7 +56,7 @@ namespace BonusCalcListener.UseCase
 
             return new PayElement
             {
-                PayElementTypeId = REACTIVE_REPAIRS_TYPE,
+                PayElementTypeId = PayElementTypes.Reactive,
                 WorkOrder = eventData.WorkOrderId,
                 Address = eventData.Address,
                 Comment = eventData.Description,
@@ -76,7 +85,7 @@ namespace BonusCalcListener.UseCase
 
             return new PayElement
             {
-                PayElementTypeId = OUT_OF_HOURS_JOB_TYPE,
+                PayElementTypeId = PayElementTypes.OutOfHours,
                 WorkOrder = eventData.WorkOrderId,
                 Address = eventData.Address,
                 Comment = eventData.Description,
@@ -105,7 +114,7 @@ namespace BonusCalcListener.UseCase
 
             return new PayElement
             {
-                PayElementTypeId = OVERTIME_JOB_TYPE,
+                PayElementTypeId = PayElementTypes.Overtime,
                 WorkOrder = eventData.WorkOrderId,
                 Address = eventData.Address,
                 Comment = eventData.Description,

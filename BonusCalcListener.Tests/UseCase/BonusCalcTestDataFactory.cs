@@ -166,7 +166,8 @@ namespace BonusCalcListener.Tests.UseCase
                     StandardMinuteValue = 100,
                     OperativePrn = "4044",
                     JobPercentage = 50,
-                    ClosedTime = closedTime
+                    ClosedTime = closedTime,
+                    PaymentType = null
                 }
             };
         }
