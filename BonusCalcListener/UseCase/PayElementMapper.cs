@@ -56,7 +56,7 @@ namespace BonusCalcListener.UseCase
 
             return new PayElement
             {
-                PayElementTypeId = PayElementTypes.Reactive,
+                PayElementTypeId = PayElementTypeIds.Reactive,
                 WorkOrder = eventData.WorkOrderId,
                 Address = eventData.Address,
                 Comment = eventData.Description,
@@ -85,7 +85,7 @@ namespace BonusCalcListener.UseCase
 
             return new PayElement
             {
-                PayElementTypeId = PayElementTypes.OutOfHours,
+                PayElementTypeId = PayElementTypeIds.OutOfHours,
                 WorkOrder = eventData.WorkOrderId,
                 Address = eventData.Address,
                 Comment = eventData.Description,
@@ -114,7 +114,7 @@ namespace BonusCalcListener.UseCase
 
             return new PayElement
             {
-                PayElementTypeId = PayElementTypes.Overtime,
+                PayElementTypeId = PayElementTypeIds.Overtime,
                 WorkOrder = eventData.WorkOrderId,
                 Address = eventData.Address,
                 Comment = eventData.Description,

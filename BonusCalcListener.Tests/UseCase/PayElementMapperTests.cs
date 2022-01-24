@@ -65,7 +65,7 @@ namespace BonusCalcListener.Tests.UseCase
             var result = _sut.BuildPayElement(evtData);
 
             // Assert
-            result.PayElementTypeId.Should().Be(PayElementTypes.Reactive);
+            result.PayElementTypeId.Should().Be(PayElementTypeIds.Reactive);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
@@ -99,7 +99,7 @@ namespace BonusCalcListener.Tests.UseCase
             var result = _sut.BuildPayElement(evtData);
 
             // Assert
-            result.PayElementTypeId.Should().Be(PayElementTypes.Reactive);
+            result.PayElementTypeId.Should().Be(PayElementTypeIds.Reactive);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
@@ -133,7 +133,7 @@ namespace BonusCalcListener.Tests.UseCase
             var result = _sut.BuildPayElement(evtData);
 
             // Assert
-            result.PayElementTypeId.Should().Be(PayElementTypes.OutOfHours);
+            result.PayElementTypeId.Should().Be(PayElementTypeIds.OutOfHours);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
@@ -167,7 +167,7 @@ namespace BonusCalcListener.Tests.UseCase
             var result = _sut.BuildPayElement(evtData);
 
             // Assert
-            result.PayElementTypeId.Should().Be(PayElementTypes.OutOfHours);
+            result.PayElementTypeId.Should().Be(PayElementTypeIds.OutOfHours);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
@@ -201,7 +201,7 @@ namespace BonusCalcListener.Tests.UseCase
             var result = _sut.BuildPayElement(evtData);
 
             // Assert
-            result.PayElementTypeId.Should().Be(PayElementTypes.Overtime);
+            result.PayElementTypeId.Should().Be(PayElementTypeIds.Overtime);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
@@ -235,7 +235,7 @@ namespace BonusCalcListener.Tests.UseCase
             var result = _sut.BuildPayElement(evtData);
 
             // Assert
-            result.PayElementTypeId.Should().Be(PayElementTypes.Overtime);
+            result.PayElementTypeId.Should().Be(PayElementTypeIds.Overtime);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
@@ -269,7 +269,7 @@ namespace BonusCalcListener.Tests.UseCase
             var result = _sut.BuildPayElement(evtData);
 
             // Assert
-            result.PayElementTypeId.Should().Be(PayElementTypes.Overtime);
+            result.PayElementTypeId.Should().Be(PayElementTypeIds.Overtime);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
@@ -303,7 +303,7 @@ namespace BonusCalcListener.Tests.UseCase
             var result = _sut.BuildPayElement(evtData);
 
             // Assert
-            result.PayElementTypeId.Should().Be(PayElementTypes.Overtime);
+            result.PayElementTypeId.Should().Be(PayElementTypeIds.Overtime);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
@@ -337,7 +337,7 @@ namespace BonusCalcListener.Tests.UseCase
             var result = _sut.BuildPayElement(evtData);
 
             // Assert
-            result.PayElementTypeId.Should().Be(PayElementTypes.Reactive);
+            result.PayElementTypeId.Should().Be(PayElementTypeIds.Reactive);
         }
 
 
