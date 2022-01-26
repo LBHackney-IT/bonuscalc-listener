@@ -1,4 +1,5 @@
 using BonusCalcListener.Boundary;
+using BonusCalcListener.Domain;
 using BonusCalcListener.Gateway;
 using BonusCalcListener.Gateway.Interfaces;
 using BonusCalcListener.Infrastructure;
@@ -68,8 +69,8 @@ namespace BonusCalcListener.Tests.UseCase
             _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Once);
         }
 
-        [TestCase(Domain.PaymentType.Overtime)]
-        [TestCase(Domain.PaymentType.Bonus)]
+        [TestCase(PaymentType.Overtime)]
+        [TestCase(PaymentType.Bonus)]
         public void WhenPaymentTypeNotCloseToBase_ShouldAddPayElementWithValidRequest(Domain.PaymentType paymentType)
         {
             var timesheet = BonusCalcTestDataFactory.ValidTimesheet();

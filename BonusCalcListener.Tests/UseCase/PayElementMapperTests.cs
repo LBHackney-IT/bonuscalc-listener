@@ -217,8 +217,9 @@ namespace BonusCalcListener.Tests.UseCase
             result.Value.Should().Be(21.6m);
         }
 
-        [Test]
-        public void WhenPaymentTypeIsOvertime_ShouldCreateOvertimePayElementWithValidArguments()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void WhenPaymentTypeIsOvertime_ShouldCreateOvertimePayElementWithValidArguments(bool isOvertime)
         {
             // Arrange
             var evtData = _fixture.Create<WorkOrderOperativeSmvData>();
@@ -227,9 +228,9 @@ namespace BonusCalcListener.Tests.UseCase
             evtData.JobPercentage = 50;
             evtData.ClosedTime = new DateTime(2021, 11, 08, 14, 32, 01);
             evtData.IsOutOfHours = false;
-            // evtData.IsOvertime = true;
+            evtData.IsOvertime = isOvertime; // will ignore isOvertime value
             evtData.OperativeCost = 0;
-            evtData.PaymentType = Domain.PaymentType.Overtime;
+            evtData.PaymentType = PaymentType.Overtime;
 
             // Act
             var result = _sut.BuildPayElement(evtData);
@@ -252,7 +253,7 @@ namespace BonusCalcListener.Tests.UseCase
         }
 
         [Test]
-        public void WhenPaymentTypeIsNull_ShouldCreateOvertimePayElementWithZeroValue()
+        public void WhenPaymentTypeIsNull_AndNoAccess_ShouldCreateOvertimePayElementWithZeroValue()
         {
             // Arrange
             var evtData = _fixture.Create<WorkOrderOperativeSmvData>();
@@ -285,8 +286,9 @@ namespace BonusCalcListener.Tests.UseCase
             result.Value.Should().Be(0.0m);
         }
 
-        [Test]
-        public void WhenPaymentTypeIsOvertime_ShouldCreateOvertimePayElementWithZeroValue()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void WhenPaymentTypeIsOvertime_AndNoAccess_ShouldCreateOvertimePayElementWithZeroValue(bool isOvertime)
         {
             // Arrange
             var evtData = _fixture.Create<WorkOrderOperativeSmvData>();
@@ -295,9 +297,9 @@ namespace BonusCalcListener.Tests.UseCase
             evtData.JobPercentage = 50;
             evtData.ClosedTime = new DateTime(2021, 11, 08, 14, 32, 01);
             evtData.IsOutOfHours = false;
-            //evtData.IsOvertime = true;
+            evtData.IsOvertime = isOvertime;  // will ignore isOvertime value
             evtData.OperativeCost = 0;
-            evtData.PaymentType = Domain.PaymentType.Overtime;
+            evtData.PaymentType = PaymentType.Overtime;
 
             // Act
             var result = _sut.BuildPayElement(evtData);
@@ -319,8 +321,9 @@ namespace BonusCalcListener.Tests.UseCase
             result.Value.Should().Be(0.0m);
         }
 
-        [Test]
-        public void WhenPaymentTypeIsNotOvertime_ShouldCreateReactivePayElement()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void WhenPaymentTypeIsNotOvertime_ShouldCreateReactivePayElement(bool isOvertime)
         {
             // Arrange
             var evtData = _fixture.Create<WorkOrderOperativeSmvData>();
@@ -329,9 +332,9 @@ namespace BonusCalcListener.Tests.UseCase
             evtData.JobPercentage = 50;
             evtData.ClosedTime = new DateTime(2021, 11, 08, 14, 32, 01);
             evtData.IsOutOfHours = false;
-            //evtData.IsOvertime = true;
+            evtData.IsOvertime = isOvertime;  // will ignore isOvertime value
             evtData.OperativeCost = 0;
-            evtData.PaymentType = Domain.PaymentType.Bonus;
+            evtData.PaymentType = PaymentType.Bonus;
 
             // Act
             var result = _sut.BuildPayElement(evtData);

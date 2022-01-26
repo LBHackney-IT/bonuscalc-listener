@@ -40,7 +40,7 @@ namespace BonusCalcListener.UseCase
             }
 
             // new check using PaymentType enum
-            return eventData.PaymentType == Domain.PaymentType.Overtime;
+            return eventData.PaymentType == PaymentType.Overtime;
         }
 
         private PayElement BuildReactivePayElement(WorkOrderOperativeSmvData eventData)
