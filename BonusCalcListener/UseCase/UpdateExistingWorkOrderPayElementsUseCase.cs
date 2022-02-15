@@ -50,6 +50,13 @@ namespace BonusCalcListener.UseCase
                 return; // This is a work order from before the restarting of the bonus scheme
             }
 
+            // CloseToBase workOrders should not be counted in bonusCalculation
+            if (data.PaymentType != null && data.PaymentType == Domain.PaymentType.CloseToBase)
+            {
+                _logger.LogInformation($"WorkOrder {data.WorkOrderId} will not be recorded because the paymentType is 'CloseToBase'.");
+                return;
+            }
+
             // Get the timesheet based on the operative id and closed time of the work order
             var operativeTimesheet = await _timesheetGateway.GetCurrentTimeSheetForOperative(data.OperativePrn, data.ClosedTime);
 
