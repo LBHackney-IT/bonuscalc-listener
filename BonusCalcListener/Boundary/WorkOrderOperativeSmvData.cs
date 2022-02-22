@@ -22,7 +22,6 @@ namespace BonusCalcListener.Boundary
         public double? OperativeCost { get; set; }
 
         // Overtime data
-        public bool? IsOvertime { get; set; }
         public PaymentType? PaymentType { get; set; }
     }
 }
