@@ -33,14 +33,7 @@ namespace BonusCalcListener.UseCase
 
         private static bool EventIsOvertime(WorkOrderOperativeSmvData eventData)
         {
-            if (eventData.PaymentType == null)
-            {
-                // old check
-                return eventData.IsOvertime.HasValue && (bool) eventData.IsOvertime;
-            }
-
-            // new check using PaymentType enum
-            return eventData.PaymentType == PaymentType.Overtime;
+            return eventData?.PaymentType == PaymentType.Overtime;
         }
 
         private PayElement BuildReactivePayElement(WorkOrderOperativeSmvData eventData)
