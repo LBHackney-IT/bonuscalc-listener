@@ -36,7 +36,7 @@ CREATE TABLE public.bonus_periods (
     year integer NOT NULL,
     number integer NOT NULL,
     closed_at timestamp without time zone,
-    id text DEFAULT ''::text NOT NULL
+    id character varying(10) NOT NULL
 );
 
 
@@ -54,7 +54,8 @@ CREATE TABLE public.pay_element_types (
     non_productive boolean DEFAULT false NOT NULL,
     out_of_hours boolean DEFAULT false NOT NULL,
     overtime boolean DEFAULT false NOT NULL,
-    selectable boolean DEFAULT false NOT NULL
+    selectable boolean DEFAULT false NOT NULL,
+    smv_per_hour integer
 );
 
 
@@ -79,7 +80,9 @@ CREATE TABLE public.pay_elements (
     tuesday numeric(10,4) DEFAULT 0.0 NOT NULL,
     wednesday numeric(10,4) DEFAULT 0.0 NOT NULL,
     timesheet_id character varying(17) NOT NULL,
-    closed_at timestamp without time zone
+    closed_at timestamp without time zone,
+    search_vector tsvector GENERATED ALWAYS AS (to_tsvector('simple'::regconfig, (((COALESCE(work_order, ''::character varying))::text || ' '::text) || COALESCE(address, ''::text)))) STORED,
+    trade_code character varying(3)
 );
 
 
@@ -111,8 +114,110 @@ CREATE TABLE public.operatives (
     is_archived boolean NOT NULL,
     scheme_id integer,
     email_address character varying(100),
-    utilisation numeric(5,4) DEFAULT 1.0 NOT NULL
+    utilisation numeric(5,4) DEFAULT 1.0 NOT NULL,
+    search_vector tsvector GENERATED ALWAYS AS (to_tsvector('simple'::regconfig, (((((((id)::text || ' '::text) || (name)::text) || ' '::text) || (trade_id)::text) || ' '::text) || (section)::text))) STORED
 );
+
+
+--
+-- Name: productive_pay_elements; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.productive_pay_elements AS
+ SELECT p.timesheet_id,
+    (sum(p.value))::numeric(10,4) AS value
+   FROM (public.pay_elements p
+     JOIN public.pay_element_types t ON ((p.pay_element_type_id = t.id)))
+  WHERE (t.productive = true)
+  GROUP BY p.timesheet_id;
+
+
+--
+-- Name: timesheets; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.timesheets (
+    operative_id character varying(6) NOT NULL,
+    week_id character varying(10) NOT NULL,
+    id character varying(17) NOT NULL,
+    utilisation numeric(5,4) DEFAULT 1.0 NOT NULL,
+    report_sent_at timestamp without time zone
+);
+
+
+--
+-- Name: trades; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.trades (
+    id character varying(3) NOT NULL,
+    description character varying(100) NOT NULL
+);
+
+
+--
+-- Name: weeks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.weeks (
+    bonus_period_id character varying(10) NOT NULL,
+    start_at timestamp without time zone NOT NULL,
+    number integer NOT NULL,
+    closed_at timestamp without time zone,
+    id character varying(10) NOT NULL,
+    closed_by character varying(100),
+    reports_sent_at timestamp without time zone
+);
+
+
+--
+-- Name: weekly_summaries; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.weekly_summaries AS
+ SELECT concat(t.operative_id, '/', w.bonus_period_id, '/', w.id) AS id,
+    concat(t.operative_id, '/', w.bonus_period_id) AS summary_id,
+    w.id AS week_id,
+    t.operative_id,
+    w.number,
+    w.start_at,
+    w.closed_at,
+    (COALESCE(p.value, (0)::numeric))::numeric(10,4) AS productive_value,
+    (COALESCE(np.duration, (0)::numeric))::numeric(10,4) AS non_productive_duration,
+    (COALESCE(np.value, (0)::numeric))::numeric(10,4) AS non_productive_value,
+    ((COALESCE(p.value, (0)::numeric) + COALESCE(np.value, (0)::numeric)))::numeric(10,4) AS total_value,
+    t.utilisation,
+    (round(avg((COALESCE(p.value, (0)::numeric) + COALESCE(np.value, (0)::numeric))) OVER (PARTITION BY w.bonus_period_id, t.operative_id ORDER BY w.number), 4))::numeric(10,4) AS projected_value,
+    (round(avg(t.utilisation) OVER (PARTITION BY w.bonus_period_id, t.operative_id ORDER BY w.number), 4))::numeric(5,4) AS average_utilisation,
+    t.report_sent_at
+   FROM (((public.weeks w
+     JOIN public.timesheets t ON (((w.id)::text = (t.week_id)::text)))
+     LEFT JOIN public.productive_pay_elements p ON (((t.id)::text = (p.timesheet_id)::text)))
+     LEFT JOIN public.non_productive_pay_elements np ON (((t.id)::text = (np.timesheet_id)::text)));
+
+
+--
+-- Name: operative_summaries; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.operative_summaries AS
+ SELECT ws.operative_id AS id,
+    ws.week_id,
+    o.name,
+    o.trade_id,
+    t.description AS trade_description,
+    o.scheme_id,
+    ws.productive_value,
+    ws.non_productive_duration,
+    ws.non_productive_value,
+    ws.total_value,
+    ws.utilisation,
+    ws.projected_value,
+    ws.average_utilisation,
+    ws.report_sent_at
+   FROM ((public.weekly_summaries ws
+     JOIN public.operatives o ON (((ws.operative_id)::text = (o.id)::text)))
+     JOIN public.trades t ON (((o.trade_id)::text = (t.id)::text)));
 
 
 --
@@ -142,19 +247,6 @@ ALTER TABLE public.pay_elements ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDEN
 
 
 --
--- Name: productive_pay_elements; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW public.productive_pay_elements AS
- SELECT p.timesheet_id,
-    (sum(p.value))::numeric(10,4) AS value
-   FROM (public.pay_elements p
-     JOIN public.pay_element_types t ON ((p.pay_element_type_id = t.id)))
-  WHERE (t.productive = true)
-  GROUP BY p.timesheet_id;
-
-
---
 -- Name: schemes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -167,31 +259,6 @@ CREATE TABLE public.schemes (
 
 
 --
--- Name: timesheets; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.timesheets (
-    operative_id character varying(6) NOT NULL,
-    week_id text,
-    id character varying(17) NOT NULL,
-    utilisation numeric(5,4) DEFAULT 1.0 NOT NULL
-);
-
-
---
--- Name: weeks; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.weeks (
-    bonus_period_id text,
-    start_at timestamp without time zone NOT NULL,
-    number integer NOT NULL,
-    closed_at timestamp without time zone,
-    id text DEFAULT ''::text NOT NULL
-);
-
-
---
 -- Name: summaries; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -200,41 +267,29 @@ CREATE VIEW public.summaries AS
     t.operative_id,
     w.bonus_period_id
    FROM (public.timesheets t
-     JOIN public.weeks w ON ((t.week_id = w.id)))
+     JOIN public.weeks w ON (((t.week_id)::text = (w.id)::text)))
   GROUP BY t.operative_id, w.bonus_period_id;
 
 
 --
--- Name: trades; Type: TABLE; Schema: public; Owner: -
+-- Name: work_elements; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE TABLE public.trades (
-    id character varying(3) NOT NULL,
-    description character varying(100) NOT NULL
-);
-
-
---
--- Name: weekly_summaries; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW public.weekly_summaries AS
- SELECT concat(t.operative_id, '/', w.bonus_period_id, '/', w.id) AS id,
-    concat(t.operative_id, '/', w.bonus_period_id) AS summary_id,
-    w.number,
-    w.start_at,
-    w.closed_at,
-    (COALESCE(p.value, (0)::numeric))::numeric(10,4) AS productive_value,
-    (COALESCE(np.duration, (0)::numeric))::numeric(10,4) AS non_productive_duration,
-    (COALESCE(np.value, (0)::numeric))::numeric(10,4) AS non_productive_value,
-    ((COALESCE(p.value, (0)::numeric) + COALESCE(np.value, (0)::numeric)))::numeric(10,4) AS total_value,
-    t.utilisation,
-    (round(avg((COALESCE(p.value, (0)::numeric) + COALESCE(np.value, (0)::numeric))) OVER (PARTITION BY w.bonus_period_id, t.operative_id ORDER BY w.number), 4))::numeric(10,4) AS projected_value,
-    (round(avg(t.utilisation) OVER (PARTITION BY w.bonus_period_id, t.operative_id ORDER BY w.number), 4))::numeric(5,4) AS average_utilisation
-   FROM (((public.weeks w
-     JOIN public.timesheets t ON ((w.id = t.week_id)))
-     LEFT JOIN public.productive_pay_elements p ON (((t.id)::text = (p.timesheet_id)::text)))
-     LEFT JOIN public.non_productive_pay_elements np ON (((t.id)::text = (np.timesheet_id)::text)));
+CREATE VIEW public.work_elements AS
+ SELECT pe.id,
+    pe.pay_element_type_id,
+    pe.work_order,
+    pe.address,
+    pe.comment AS description,
+    t.operative_id,
+    o.name AS operative_name,
+    t.week_id,
+    pe.value,
+    pe.closed_at,
+    pe.search_vector
+   FROM ((public.pay_elements pe
+     JOIN public.timesheets t ON (((pe.timesheet_id)::text = (t.id)::text)))
+     JOIN public.operatives o ON (((t.operative_id)::text = (o.id)::text)));
 
 
 --
@@ -346,6 +401,13 @@ CREATE INDEX ix_operatives_scheme_id ON public.operatives USING btree (scheme_id
 
 
 --
+-- Name: ix_operatives_search_vector; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_operatives_search_vector ON public.operatives USING gin (search_vector);
+
+
+--
 -- Name: ix_operatives_trade_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -374,10 +436,24 @@ CREATE INDEX ix_pay_elements_pay_element_type_id ON public.pay_elements USING bt
 
 
 --
+-- Name: ix_pay_elements_search_vector; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_pay_elements_search_vector ON public.pay_elements USING gin (search_vector);
+
+
+--
 -- Name: ix_pay_elements_timesheet_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX ix_pay_elements_timesheet_id ON public.pay_elements USING btree (timesheet_id);
+
+
+--
+-- Name: ix_pay_elements_trade_code; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_pay_elements_trade_code ON public.pay_elements USING btree (trade_code);
 
 
 --
@@ -468,7 +544,7 @@ ALTER TABLE ONLY public.timesheets
 --
 
 ALTER TABLE ONLY public.timesheets
-    ADD CONSTRAINT fk_timesheets_weeks_week_id FOREIGN KEY (week_id) REFERENCES public.weeks(id) ON DELETE RESTRICT;
+    ADD CONSTRAINT fk_timesheets_weeks_week_id FOREIGN KEY (week_id) REFERENCES public.weeks(id) ON DELETE CASCADE;
 
 
 --
@@ -476,7 +552,7 @@ ALTER TABLE ONLY public.timesheets
 --
 
 ALTER TABLE ONLY public.weeks
-    ADD CONSTRAINT fk_weeks_bonus_periods_bonus_period_id FOREIGN KEY (bonus_period_id) REFERENCES public.bonus_periods(id) ON DELETE RESTRICT;
+    ADD CONSTRAINT fk_weeks_bonus_periods_bonus_period_id FOREIGN KEY (bonus_period_id) REFERENCES public.bonus_periods(id) ON DELETE CASCADE;
 
 
 --

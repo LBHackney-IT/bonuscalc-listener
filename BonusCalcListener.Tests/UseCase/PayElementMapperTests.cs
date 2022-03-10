@@ -101,6 +101,7 @@ namespace BonusCalcListener.Tests.UseCase
             // Assert
             result.PayElementTypeId.Should().Be(PayElementTypeIds.Reactive);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
+            result.TradeCode.Should().Be(evtData.TradeCode);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
             result.ClosedAt.Should().Be(evtData.ClosedTime);
@@ -135,6 +136,7 @@ namespace BonusCalcListener.Tests.UseCase
             // Assert
             result.PayElementTypeId.Should().Be(PayElementTypeIds.OutOfHours);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
+            result.TradeCode.Should().Be(evtData.TradeCode);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
             result.ClosedAt.Should().Be(evtData.ClosedTime);
@@ -169,6 +171,7 @@ namespace BonusCalcListener.Tests.UseCase
             // Assert
             result.PayElementTypeId.Should().Be(PayElementTypeIds.OutOfHours);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
+            result.TradeCode.Should().Be(evtData.TradeCode);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
             result.ClosedAt.Should().Be(evtData.ClosedTime);
@@ -203,6 +206,7 @@ namespace BonusCalcListener.Tests.UseCase
             // Assert
             result.PayElementTypeId.Should().Be(PayElementTypeIds.Overtime);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
+            result.TradeCode.Should().Be(evtData.TradeCode);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
             result.ClosedAt.Should().Be(evtData.ClosedTime);
@@ -238,6 +242,7 @@ namespace BonusCalcListener.Tests.UseCase
             // Assert
             result.PayElementTypeId.Should().Be(PayElementTypeIds.Overtime);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
+            result.TradeCode.Should().Be(evtData.TradeCode);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
             result.ClosedAt.Should().Be(evtData.ClosedTime);
@@ -272,6 +277,7 @@ namespace BonusCalcListener.Tests.UseCase
             // Assert
             result.PayElementTypeId.Should().Be(PayElementTypeIds.Overtime);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
+            result.TradeCode.Should().Be(evtData.TradeCode);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
             result.ClosedAt.Should().Be(evtData.ClosedTime);
@@ -307,6 +313,7 @@ namespace BonusCalcListener.Tests.UseCase
             // Assert
             result.PayElementTypeId.Should().Be(PayElementTypeIds.Overtime);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
+            result.TradeCode.Should().Be(evtData.TradeCode);
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
             result.ClosedAt.Should().Be(evtData.ClosedTime);

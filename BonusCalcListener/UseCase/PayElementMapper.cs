@@ -58,6 +58,7 @@ namespace BonusCalcListener.UseCase
             {
                 PayElementTypeId = PayElementTypeIds.Reactive,
                 WorkOrder = eventData.WorkOrderId,
+                TradeCode = eventData.TradeCode,
                 Address = eventData.Address,
                 Comment = eventData.Description,
                 ClosedAt = eventData.ClosedTime,
@@ -87,6 +88,7 @@ namespace BonusCalcListener.UseCase
             {
                 PayElementTypeId = PayElementTypeIds.OutOfHours,
                 WorkOrder = eventData.WorkOrderId,
+                TradeCode = eventData.TradeCode,
                 Address = eventData.Address,
                 Comment = eventData.Description,
                 ClosedAt = eventData.ClosedTime,
@@ -116,6 +118,7 @@ namespace BonusCalcListener.UseCase
             {
                 PayElementTypeId = PayElementTypeIds.Overtime,
                 WorkOrder = eventData.WorkOrderId,
+                TradeCode = eventData.TradeCode,
                 Address = eventData.Address,
                 Comment = eventData.Description,
                 ClosedAt = eventData.ClosedTime,
