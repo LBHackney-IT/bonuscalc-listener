@@ -10,6 +10,8 @@ namespace BonusCalcListener.Infrastructure
 
         public string WorkOrder { get; set; }
 
+        public string TradeCode { get; set; }
+
         public string Address { get; set; }
 
         public string Comment { get; set; }

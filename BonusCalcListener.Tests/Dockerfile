@@ -12,8 +12,7 @@ COPY ./BonusCalcListener.sln ./
 COPY ./BonusCalcListener/BonusCalcListener.csproj ./BonusCalcListener/
 COPY ./BonusCalcListener.Tests/BonusCalcListener.Tests.csproj ./BonusCalcListener.Tests/
 COPY /NuGet.Config /root/.nuget/NuGet/NuGet.Config
-COPY init-testdb.sql /docker-entrypoint-initdb.d/
-COPY init-testdb.sql /database:/docker-entrypoint-initdb.d/
+COPY /database/init-testdb.sql /docker-entrypoint-initdb.d/
 
 RUN dotnet restore ./BonusCalcListener/BonusCalcListener.csproj
 RUN dotnet restore ./BonusCalcListener.Tests/BonusCalcListener.Tests.csproj
