@@ -1,6 +1,5 @@
 using BonusCalcListener.Boundary;
 using BonusCalcListener.Domain;
-using BonusCalcListener.Gateway;
 using BonusCalcListener.Gateway.Interfaces;
 using BonusCalcListener.Infrastructure;
 using BonusCalcListener.UseCase;
@@ -8,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -71,7 +69,7 @@ namespace BonusCalcListener.Tests.UseCase
 
         [TestCase(PaymentType.Overtime)]
         [TestCase(PaymentType.Bonus)]
-        public void WhenPaymentTypeNotCloseToBase_ShouldAddPayElementWithValidRequest(Domain.PaymentType paymentType)
+        public void WhenPaymentTypeNotCloseToBase_ShouldAddPayElementWithValidRequest(PaymentType paymentType)
         {
             var timesheet = BonusCalcTestDataFactory.ValidTimesheet();
             var payElements = timesheet.PayElements;
@@ -169,7 +167,7 @@ namespace BonusCalcListener.Tests.UseCase
                 .Verifiable();
 
             var message = BonusCalcTestDataFactory.ValidMessage();
-            message.EventData.PaymentType = Domain.PaymentType.CloseToBase;
+            message.EventData.PaymentType = PaymentType.CloseToBase;
 
             // Act
             Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(message));

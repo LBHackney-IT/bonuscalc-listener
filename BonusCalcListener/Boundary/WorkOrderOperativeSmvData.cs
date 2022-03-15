@@ -25,7 +25,7 @@ namespace BonusCalcListener.Boundary
         public bool? IsOvertime { get; set; }
         public PaymentType? PaymentType { get; set; }
 
-        // Proxy for budget code
-        public string TradeCode { get; set; }
+        // Proxy for cost code
+        public string ContractorReference { get; set; }
     }
 }

@@ -1,14 +1,11 @@
 using AutoFixture;
 using BonusCalcListener.Boundary;
 using BonusCalcListener.Domain;
-using BonusCalcListener.Infrastructure;
 using BonusCalcListener.UseCase;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace BonusCalcListener.Tests.UseCase
 {
@@ -60,6 +57,7 @@ namespace BonusCalcListener.Tests.UseCase
             evtData.IsOvertime = false;
             evtData.OperativeCost = 0;
             evtData.PaymentType = null;
+            evtData.ContractorReference = "H01";
 
             // Act
             var result = _sut.BuildPayElement(evtData);
@@ -67,6 +65,7 @@ namespace BonusCalcListener.Tests.UseCase
             // Assert
             result.PayElementTypeId.Should().Be(PayElementTypeIds.Reactive);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
+            result.CostCode.Should().Be("H3009");
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
             result.ClosedAt.Should().Be(evtData.ClosedTime);
@@ -94,6 +93,7 @@ namespace BonusCalcListener.Tests.UseCase
             evtData.IsOvertime = false;
             evtData.OperativeCost = 0;
             evtData.PaymentType = null;
+            evtData.ContractorReference = "H01";
 
             // Act
             var result = _sut.BuildPayElement(evtData);
@@ -101,7 +101,7 @@ namespace BonusCalcListener.Tests.UseCase
             // Assert
             result.PayElementTypeId.Should().Be(PayElementTypeIds.Reactive);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
-            result.TradeCode.Should().Be(evtData.TradeCode);
+            result.CostCode.Should().Be("H3009");
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
             result.ClosedAt.Should().Be(evtData.ClosedTime);
@@ -129,6 +129,7 @@ namespace BonusCalcListener.Tests.UseCase
             evtData.IsOvertime = false;
             evtData.OperativeCost = 68;
             evtData.PaymentType = null;
+            evtData.ContractorReference = "H03";
 
             // Act
             var result = _sut.BuildPayElement(evtData);
@@ -136,7 +137,7 @@ namespace BonusCalcListener.Tests.UseCase
             // Assert
             result.PayElementTypeId.Should().Be(PayElementTypeIds.OutOfHours);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
-            result.TradeCode.Should().Be(evtData.TradeCode);
+            result.CostCode.Should().Be("H3015");
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
             result.ClosedAt.Should().Be(evtData.ClosedTime);
@@ -164,6 +165,7 @@ namespace BonusCalcListener.Tests.UseCase
             evtData.IsOvertime = false;
             evtData.OperativeCost = 68;
             evtData.PaymentType = null;
+            evtData.ContractorReference = "H03";
 
             // Act
             var result = _sut.BuildPayElement(evtData);
@@ -171,7 +173,7 @@ namespace BonusCalcListener.Tests.UseCase
             // Assert
             result.PayElementTypeId.Should().Be(PayElementTypeIds.OutOfHours);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
-            result.TradeCode.Should().Be(evtData.TradeCode);
+            result.CostCode.Should().Be("H3015");
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
             result.ClosedAt.Should().Be(evtData.ClosedTime);
@@ -199,6 +201,7 @@ namespace BonusCalcListener.Tests.UseCase
             evtData.IsOvertime = true;
             evtData.OperativeCost = 0;
             evtData.PaymentType = null;
+            evtData.ContractorReference = "H01";
 
             // Act
             var result = _sut.BuildPayElement(evtData);
@@ -206,7 +209,7 @@ namespace BonusCalcListener.Tests.UseCase
             // Assert
             result.PayElementTypeId.Should().Be(PayElementTypeIds.Overtime);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
-            result.TradeCode.Should().Be(evtData.TradeCode);
+            result.CostCode.Should().Be("H3009");
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
             result.ClosedAt.Should().Be(evtData.ClosedTime);
@@ -235,6 +238,7 @@ namespace BonusCalcListener.Tests.UseCase
             evtData.IsOvertime = isOvertime; // will ignore isOvertime value
             evtData.OperativeCost = 0;
             evtData.PaymentType = PaymentType.Overtime;
+            evtData.ContractorReference = "H01";
 
             // Act
             var result = _sut.BuildPayElement(evtData);
@@ -242,7 +246,7 @@ namespace BonusCalcListener.Tests.UseCase
             // Assert
             result.PayElementTypeId.Should().Be(PayElementTypeIds.Overtime);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
-            result.TradeCode.Should().Be(evtData.TradeCode);
+            result.CostCode.Should().Be("H3009");
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
             result.ClosedAt.Should().Be(evtData.ClosedTime);
@@ -270,6 +274,7 @@ namespace BonusCalcListener.Tests.UseCase
             evtData.IsOvertime = true;
             evtData.OperativeCost = 0;
             evtData.PaymentType = null;
+            evtData.ContractorReference = "H01";
 
             // Act
             var result = _sut.BuildPayElement(evtData);
@@ -277,7 +282,7 @@ namespace BonusCalcListener.Tests.UseCase
             // Assert
             result.PayElementTypeId.Should().Be(PayElementTypeIds.Overtime);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
-            result.TradeCode.Should().Be(evtData.TradeCode);
+            result.CostCode.Should().Be("H3009");
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
             result.ClosedAt.Should().Be(evtData.ClosedTime);
@@ -306,6 +311,7 @@ namespace BonusCalcListener.Tests.UseCase
             evtData.IsOvertime = isOvertime;  // will ignore isOvertime value
             evtData.OperativeCost = 0;
             evtData.PaymentType = PaymentType.Overtime;
+            evtData.ContractorReference = "H01";
 
             // Act
             var result = _sut.BuildPayElement(evtData);
@@ -313,7 +319,7 @@ namespace BonusCalcListener.Tests.UseCase
             // Assert
             result.PayElementTypeId.Should().Be(PayElementTypeIds.Overtime);
             result.WorkOrder.Should().Be(evtData.WorkOrderId);
-            result.TradeCode.Should().Be(evtData.TradeCode);
+            result.CostCode.Should().Be("H3009");
             result.Address.Should().Be(evtData.Address);
             result.Comment.Should().Be(evtData.Description);
             result.ClosedAt.Should().Be(evtData.ClosedTime);
@@ -342,6 +348,7 @@ namespace BonusCalcListener.Tests.UseCase
             evtData.IsOvertime = isOvertime;  // will ignore isOvertime value
             evtData.OperativeCost = 0;
             evtData.PaymentType = PaymentType.Bonus;
+            evtData.ContractorReference = "H01";
 
             // Act
             var result = _sut.BuildPayElement(evtData);

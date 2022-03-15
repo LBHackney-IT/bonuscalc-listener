@@ -7,7 +7,7 @@ namespace BonusCalcListener.UseCase
 {
     public class PayElementMapper : IMapPayElements
     {
-        private static string OVERTIME_RATE = Environment.GetEnvironmentVariable("OVERTIME_RATE") ?? "21.60";
+        private static string _overtimeRate = Environment.GetEnvironmentVariable("OVERTIME_RATE") ?? "21.60";
 
         public PayElement BuildPayElement(WorkOrderOperativeSmvData eventData)
         {
@@ -58,7 +58,7 @@ namespace BonusCalcListener.UseCase
             {
                 PayElementTypeId = PayElementTypeIds.Reactive,
                 WorkOrder = eventData.WorkOrderId,
-                TradeCode = eventData.TradeCode,
+                CostCode = ContractorReference.Map(eventData.ContractorReference),
                 Address = eventData.Address,
                 Comment = eventData.Description,
                 ClosedAt = eventData.ClosedTime,
@@ -88,7 +88,7 @@ namespace BonusCalcListener.UseCase
             {
                 PayElementTypeId = PayElementTypeIds.OutOfHours,
                 WorkOrder = eventData.WorkOrderId,
-                TradeCode = eventData.TradeCode,
+                CostCode = ContractorReference.Map(eventData.ContractorReference),
                 Address = eventData.Address,
                 Comment = eventData.Description,
                 ClosedAt = eventData.ClosedTime,
@@ -111,14 +111,14 @@ namespace BonusCalcListener.UseCase
 
             if (eventData.WorkOrderStatusCode == RepairsStatusCodes.Completed)
             {
-                operativeCost = Convert.ToDecimal(OVERTIME_RATE);
+                operativeCost = Convert.ToDecimal(_overtimeRate);
             }
 
             return new PayElement
             {
                 PayElementTypeId = PayElementTypeIds.Overtime,
                 WorkOrder = eventData.WorkOrderId,
-                TradeCode = eventData.TradeCode,
+                CostCode = ContractorReference.Map(eventData.ContractorReference),
                 Address = eventData.Address,
                 Comment = eventData.Description,
                 ClosedAt = eventData.ClosedTime,
