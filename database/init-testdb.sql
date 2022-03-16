@@ -82,7 +82,7 @@ CREATE TABLE public.pay_elements (
     timesheet_id character varying(17) NOT NULL,
     closed_at timestamp without time zone,
     search_vector tsvector GENERATED ALWAYS AS (to_tsvector('simple'::regconfig, (((COALESCE(work_order, ''::character varying))::text || ' '::text) || COALESCE(address, ''::text)))) STORED,
-    trade_code character varying(3)
+    cost_code character varying(5)
 );
 
 
@@ -450,10 +450,10 @@ CREATE INDEX ix_pay_elements_timesheet_id ON public.pay_elements USING btree (ti
 
 
 --
--- Name: ix_pay_elements_trade_code; Type: INDEX; Schema: public; Owner: -
+-- Name: ix_pay_elements_cost_code; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX ix_pay_elements_trade_code ON public.pay_elements USING btree (trade_code);
+CREATE INDEX ix_pay_elements_cost_code ON public.pay_elements USING btree (cost_code);
 
 
 --

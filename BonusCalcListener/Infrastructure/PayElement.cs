@@ -19,8 +19,8 @@ namespace BonusCalcListener.Infrastructure
         [StringLength(10)]
         public string WorkOrder { get; set; }
 
-        [StringLength(3)]
-        public string TradeCode { get; set; }
+        [StringLength(5)]
+        public string CostCode { get; set; }
 
         public string Address { get; set; }
 
