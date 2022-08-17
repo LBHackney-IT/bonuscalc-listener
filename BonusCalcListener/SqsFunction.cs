@@ -81,8 +81,9 @@ namespace BonusCalcListener
         private async Task ProcessMessageAsync(SQSEvent.SQSMessage message, ILambdaContext context)
         {
             context.Logger.LogLine($"Processing message {message.MessageId}");
-
-            var entityEvent = JsonSerializer.Deserialize<EntityEventSns>(message.Body, _jsonOptions);
+            Logger.LogInformation("Processing message {MessageId}", message.MessageId);
+            
+            var entityEvent = Deserializemessage(message);
 
             var traceUsingXray = message.Attributes.TryGetValue("AWSTraceHeader", out string traceHeader);
 
@@ -109,5 +110,19 @@ namespace BonusCalcListener
                 }
             }
         }
+
+        private EntityEventSns Deserializemessage(SQSEvent.SQSMessage message)
+        {
+            try
+            {
+                return JsonSerializer.Deserialize<EntityEventSns>(message.Body, _jsonOptions);
+
+            } catch(Exception e)
+            {
+                Logger.LogInformation("Failed to deserialize message {MessageId} {Error}", message.MessageId, e);
+                throw;
+            }
+        }
+
     }
 }
