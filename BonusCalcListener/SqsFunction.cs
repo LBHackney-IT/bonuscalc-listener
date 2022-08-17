@@ -82,7 +82,7 @@ namespace BonusCalcListener
         {
             context.Logger.LogLine($"Processing message {message.MessageId}");
             Logger.LogInformation("Processing message {MessageId}", message.MessageId);
-            
+
             var entityEvent = Deserializemessage(message);
 
             var traceUsingXray = message.Attributes.TryGetValue("AWSTraceHeader", out string traceHeader);
@@ -116,13 +116,12 @@ namespace BonusCalcListener
             try
             {
                 return JsonSerializer.Deserialize<EntityEventSns>(message.Body, _jsonOptions);
-
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Logger.LogInformation("Failed to deserialize message {MessageId} {Error}", message.MessageId, e);
                 throw;
             }
         }
-
     }
 }
