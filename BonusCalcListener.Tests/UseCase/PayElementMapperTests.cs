@@ -221,7 +221,7 @@ namespace BonusCalcListener.Tests.UseCase
             result.Saturday.Should().Be(0.0m);
             result.Sunday.Should().Be(0.0m);
             result.Duration.Should().Be(0.0m);
-            result.Value.Should().Be(21.98m);
+            result.Value.Should().Be(22.86m);
         }
 
         [TestCase(true)]
@@ -258,7 +258,7 @@ namespace BonusCalcListener.Tests.UseCase
             result.Saturday.Should().Be(0.0m);
             result.Sunday.Should().Be(0.0m);
             result.Duration.Should().Be(0.0m);
-            result.Value.Should().Be(21.98m);
+            result.Value.Should().Be(22.86m);
         }
 
         [Test]
