@@ -7,7 +7,7 @@ namespace BonusCalcListener.UseCase
 {
     public class PayElementMapper : IMapPayElements
     {
-        private static string _overtimeRate = Environment.GetEnvironmentVariable("OVERTIME_RATE") ?? "21.98";
+        private static string _overtimeRate = Environment.GetEnvironmentVariable("OVERTIME_RATE") ?? "22.86";
 
         public PayElement BuildPayElement(WorkOrderOperativeSmvData eventData)
         {
