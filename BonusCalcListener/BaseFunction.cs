@@ -89,6 +89,8 @@ namespace BonusCalcListener
             var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING")
                                 ?? Configuration.GetValue<string>("DatabaseConnectionString");
 
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
             services.AddDbContext<BonusCalcContext>(
                 opt => opt
                     .UseNpgsql(connectionString)
