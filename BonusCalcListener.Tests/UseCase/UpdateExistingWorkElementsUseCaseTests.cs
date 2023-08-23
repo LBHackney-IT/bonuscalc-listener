@@ -21,7 +21,7 @@ namespace BonusCalcListener.Tests.UseCase
         private Mock<IMapPayElements> _mockPayElementsMapper;
         private Mock<IDbSaver> _mockDbSaver;
         private Mock<PayElement> _mockPayElement;
-        private ILogger<UpdateExistingWorkOrderPayElementsUseCase> _logger;
+        private Mock<ILogger<UpdateExistingWorkOrderPayElementsUseCase>> _logger;
 
         [SetUp]
         public void Setup()
@@ -30,13 +30,13 @@ namespace BonusCalcListener.Tests.UseCase
             _mockPayElementsMapper = new Mock<IMapPayElements>();
             _mockDbSaver = new Mock<IDbSaver>();
             _mockPayElement = new Mock<PayElement>();
-            _logger = new NullLogger<UpdateExistingWorkOrderPayElementsUseCase>();
+            _logger = new Mock<ILogger<UpdateExistingWorkOrderPayElementsUseCase>>();
 
             _sut = new UpdateExistingWorkOrderPayElementsUseCase(
                 _mockTimesheetGateway.Object,
                 _mockPayElementsMapper.Object,
                 _mockDbSaver.Object,
-                _logger
+                _logger.Object
                 );
         }
 
@@ -93,6 +93,33 @@ namespace BonusCalcListener.Tests.UseCase
 
             // Assert
             _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Once);
+        }
+
+        [TestCase("T1000")]
+        [TestCase("T0001")]
+        [TestCase("T1234")]
+        [TestCase("T")]
+        [TestCase("TTTTT")]
+        public void WhenOperativeIsAgencyOperative_DoesNothing(string payrollNumber)
+        {
+            _mockDbSaver.Setup(db => db.SaveChangesAsync())
+                .Verifiable();
+
+            var message = BonusCalcTestDataFactory.ValidMessage();
+            message.EventData.OperativePrn = payrollNumber;
+
+            // Act
+            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(message));
+
+            // Assert
+            _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Never);
+            _logger.Verify(logger => logger.Log(
+                    It.Is<LogLevel>(logLevel => logLevel == LogLevel.Information),
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((@object, @type) => @object.ToString() == $"WorkOrder {message.EventData.WorkOrderId} will not be recorded because the operative is agency: {payrollNumber}" && @type.Name == "FormattedLogValues"),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+                Times.Once);
         }
 
         [Test]

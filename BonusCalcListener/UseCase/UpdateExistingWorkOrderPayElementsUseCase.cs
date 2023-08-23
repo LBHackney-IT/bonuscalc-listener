@@ -57,6 +57,14 @@ namespace BonusCalcListener.UseCase
                 return;
             }
 
+            // Ignore agency workers (those with a payroll number starting with 'T')
+            if (data.OperativePrn.StartsWith("T"))
+            {
+                _logger.LogInformation($"WorkOrder {data.WorkOrderId} will not be recorded because the operative is agency: {data.OperativePrn}");
+                return;
+            }
+
+
             // Get the timesheet based on the operative id and closed time of the work order
             var operativeTimesheet = await _timesheetGateway.GetCurrentTimeSheetForOperative(data.OperativePrn, data.ClosedTime);
 
