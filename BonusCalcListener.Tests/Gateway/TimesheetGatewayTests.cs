@@ -76,7 +76,8 @@ namespace BonusCalcListener.Tests.Gateway
                 Section = "H3007",
                 SalaryBand = 5,
                 FixedBand = false,
-                IsArchived = false
+                IsArchived = false,
+                EmailAddress = "test@test.gov.uk"
             };
 
             var bonusPeriod = new BonusPeriod
