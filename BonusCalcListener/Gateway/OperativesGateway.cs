@@ -30,7 +30,7 @@ namespace BonusCalcListener.Gateway
 
             var op = await _context.Operatives
                 .Where(x => x.Id == operativePayrollId)
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync().ConfigureAwait(false);
 
             if (op == null)
             {
@@ -42,7 +42,7 @@ namespace BonusCalcListener.Gateway
             {
                 op.IsArchived = false;
 
-                var result = await _context.SaveChangesAsync();
+                var result = await _context.SaveChangesAsync().ConfigureAwait(false);
 
                 _logger.LogInformation($"Operative {operativePayrollId} was archived but recieved job data, {result} items automatically un-archived");
             }
