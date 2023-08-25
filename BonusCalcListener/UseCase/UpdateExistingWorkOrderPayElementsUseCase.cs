@@ -15,18 +15,20 @@ namespace BonusCalcListener.UseCase
         private readonly IMapPayElements _payElementMapper;
         private readonly IDbSaver _dbSaver;
         private readonly ILogger<UpdateExistingWorkOrderPayElementsUseCase> _logger;
+        private readonly IOperativesGateway _operativesGateway;
 
         private static DateTime BonusSchemeStartTime()
         {
             return new DateTime(2021, 11, 1, 0, 0, 0, DateTimeKind.Utc);
         }
 
-        public UpdateExistingWorkOrderPayElementsUseCase(ITimesheetGateway timesheetGateway, IMapPayElements payElementMapper, IDbSaver dbSaver, ILogger<UpdateExistingWorkOrderPayElementsUseCase> logger)
+        public UpdateExistingWorkOrderPayElementsUseCase(ITimesheetGateway timesheetGateway, IMapPayElements payElementMapper, IDbSaver dbSaver, ILogger<UpdateExistingWorkOrderPayElementsUseCase> logger, IOperativesGateway operativesGateway)
         {
             _timesheetGateway = timesheetGateway;
             _payElementMapper = payElementMapper;
             _dbSaver = dbSaver;
             _logger = logger;
+            _operativesGateway = operativesGateway;
         }
 
         public async Task ProcessMessageAsync(EntityEventSns message)
@@ -64,6 +66,11 @@ namespace BonusCalcListener.UseCase
                 return;
             }
 
+            /*If the operative is a Hackney operative, but is archived, unarchive them immediately (they are still receiving work)
+            * N.B if they have been archived for a while, it may be the case that the timesheet search will fail. However, new timesheets will generate
+            * thus preventing a persistent issue for the operative
+            */
+            await _operativesGateway.ActivateOperative(data.OperativePrn);
 
             // Get the timesheet based on the operative id and closed time of the work order
             var operativeTimesheet = await _timesheetGateway.GetCurrentTimeSheetForOperative(data.OperativePrn, data.ClosedTime);
