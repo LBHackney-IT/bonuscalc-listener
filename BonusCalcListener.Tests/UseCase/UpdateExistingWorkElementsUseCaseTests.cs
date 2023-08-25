@@ -22,6 +22,7 @@ namespace BonusCalcListener.Tests.UseCase
         private Mock<IDbSaver> _mockDbSaver;
         private Mock<PayElement> _mockPayElement;
         private Mock<ILogger<UpdateExistingWorkOrderPayElementsUseCase>> _logger;
+        private Mock<IOperativesGateway> _operativesGatewayMock;
 
         [SetUp]
         public void Setup()
@@ -31,12 +32,17 @@ namespace BonusCalcListener.Tests.UseCase
             _mockDbSaver = new Mock<IDbSaver>();
             _mockPayElement = new Mock<PayElement>();
             _logger = new Mock<ILogger<UpdateExistingWorkOrderPayElementsUseCase>>();
+            _operativesGatewayMock = new Mock<IOperativesGateway>();
+
+            _operativesGatewayMock.Setup(g => g.ActivateOperative(It.IsAny<string>()))
+                .Verifiable();
 
             _sut = new UpdateExistingWorkOrderPayElementsUseCase(
                 _mockTimesheetGateway.Object,
                 _mockPayElementsMapper.Object,
                 _mockDbSaver.Object,
-                _logger.Object
+                _logger.Object,
+                _operativesGatewayMock.Object
                 );
         }
 
@@ -69,7 +75,7 @@ namespace BonusCalcListener.Tests.UseCase
 
         [TestCase(PaymentType.Overtime)]
         [TestCase(PaymentType.Bonus)]
-        public void WhenPaymentTypeNotCloseToBase_ShouldAddPayElementWithValidRequest(PaymentType paymentType)
+        public void WhenPaymentTypeNotCloseToBaseShouldAddPayElementWithValidRequest(PaymentType paymentType)
         {
             var timesheet = BonusCalcTestDataFactory.ValidTimesheet();
             var payElements = timesheet.PayElements;
@@ -93,6 +99,8 @@ namespace BonusCalcListener.Tests.UseCase
 
             // Assert
             _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Once);
+
+            _operativesGatewayMock.Verify(m => m.ActivateOperative(It.IsAny<string>()), Times.Once);
         }
 
         [TestCase("T1000")]
@@ -100,7 +108,7 @@ namespace BonusCalcListener.Tests.UseCase
         [TestCase("T1234")]
         [TestCase("T")]
         [TestCase("TTTTT")]
-        public void WhenOperativeIsAgencyOperative_DoesNothing(string payrollNumber)
+        public void WhenOperativeIsAgencyOperativeDoesNothing(string payrollNumber)
         {
             _mockDbSaver.Setup(db => db.SaveChangesAsync())
                 .Verifiable();
@@ -120,6 +128,8 @@ namespace BonusCalcListener.Tests.UseCase
                     It.IsAny<Exception>(),
                     It.IsAny<Func<It.IsAnyType, Exception, string>>()),
                 Times.Once);
+
+            _operativesGatewayMock.Verify(m => m.ActivateOperative(It.IsAny<string>()), Times.Never);
         }
 
         [Test]
