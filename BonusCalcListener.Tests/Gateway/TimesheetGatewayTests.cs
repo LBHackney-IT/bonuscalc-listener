@@ -41,7 +41,7 @@ namespace BonusCalcListener.Tests.Gateway
         public async Task RetrievesCorrectTimesheetIfClosedInClosedWeek()
         {
             // Arrange
-            await SeedData().ConfigureAwait(false);
+            // Data is now seeded during setup
 
             // Act
             var closedDate = new DateTime(2021, 10, 5, 11, 0, 0, DateTimeKind.Utc);
