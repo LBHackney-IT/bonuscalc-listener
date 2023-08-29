@@ -5,8 +5,9 @@
     <IsTestProject>true</IsTestProject>
     <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
     <NoWarn>CA1307;CA1051;CA1822;CA1001;CA1062;CA2000;S2699</NoWarn>
+    <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
     
   <ItemGroup>
@@ -20,7 +21,7 @@
     </PackageReference>
     <PackageReference Include="EFCore.NamingConventions" Version="6.0.0" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

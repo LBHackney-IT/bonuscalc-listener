@@ -50,7 +50,7 @@ services:
       - test-database
 
   test-database:
-    image: postgres:12
+    image: postgres:12.13
     ports:
       - 5435:5432
     env_file:
