@@ -27,7 +27,7 @@ namespace BonusCalcListener.Tests.Gateway
         }
 
         [Test]
-        public async Task RetrievesOperativeIfOperativeFound()
+        public async Task ActivatesOperativeIfArchivedOperativeFound()
         {
             // Arrange
             var initialState = BonusCalcContext.Operatives.FirstOrDefault().IsArchived = true;
