@@ -102,11 +102,13 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: build
-          command: docker-compose build bonus-calc-listener-test
-      - run:
-          name: Run tests
-          command: docker-compose run bonus-calc-listener-test
+          name: build and run
+          command: |
+            docker-compose build bonus-calc-listener-test
+            docker-compose run bonus-calc-listener-test
+      # - run:
+      #     name: Run tests
+      #     command: docker-compose run bonus-calc-listener-test
   assume-role-development:
     executor: docker-python
     steps:
