@@ -55,6 +55,6 @@ services:
       - 5435:5432
     env_file:
       - database.env
-    volumes:
-      - ./database:/docker-entrypoint-initdb.d
-    command: ["postgres", "-c", "log_statement=all"]
+    # volumes:
+    #   - ./database:/docker-entrypoint-initdb.d
+    # command: ["postgres", "-c", "log_statement=all"]
