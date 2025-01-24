@@ -101,7 +101,6 @@ jobs:
         image: ubuntu-2204:2023.10.1
     steps:
       - checkout
-      - setup_remote_docker
       - run:
           name: build
           command: docker-compose build bonus-calc-listener-test

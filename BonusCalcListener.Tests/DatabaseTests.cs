@@ -17,7 +17,7 @@ namespace BonusCalcListener.Tests
         [SetUp]
         public async Task RunBeforeAnyTests()
         {
-            var builder = new DbContextOptionsBuilder<BonusCalcContext>();
+            var builder = new DbContextOptionsBuilder();
             builder
                 .UseNpgsql(ConnectionString.TestDatabase())
                 .UseSnakeCaseNamingConvention();
