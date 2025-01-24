@@ -28,7 +28,7 @@ namespace BonusCalcListener.Tests
 
             _transaction = BonusCalcContext.Database.BeginTransaction();
 
-            await SeedData().ConfigureAwait(false);
+            await SeedData();
         }
 
         [TearDown]
