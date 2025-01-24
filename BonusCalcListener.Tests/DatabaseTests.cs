@@ -39,41 +39,41 @@ namespace BonusCalcListener.Tests
 
         protected async Task SeedData()
         {
-           var trade = new Trade
-           {
-               Id = "EL",
-               Description = "Electrician"
-           };
+            var trade = new Trade
+            {
+                Id = "EL",
+                Description = "Electrician"
+            };
 
-           var scheme = new Scheme
-           {
-               Id = 1,
-               Type = "SMV",
-               Description = "Reactive",
-               ConversionFactor = 1.0M
-           };
+            var scheme = new Scheme
+            {
+                Id = 1,
+                Type = "SMV",
+                Description = "Reactive",
+                ConversionFactor = 1.0M
+            };
 
-           var operative = new Operative
-           {
-               Id = "123456",
-               Name = "An Operative",
-               Trade = trade,
-               Scheme = scheme,
-               Section = "H3007",
-               SalaryBand = 5,
-               FixedBand = false,
-               IsArchived = false,
-               EmailAddress = "test@test.gov.uk"
-           };
+            var operative = new Operative
+            {
+                Id = "123456",
+                Name = "An Operative",
+                Trade = trade,
+                Scheme = scheme,
+                Section = "H3007",
+                SalaryBand = 5,
+                FixedBand = false,
+                IsArchived = false,
+                EmailAddress = "test@test.gov.uk"
+            };
 
-           var bonusPeriod = new BonusPeriod
-           {
-               Id = "2021-08-02",
-               StartAt = new DateTime(2021, 8, 1, 23, 0, 0, DateTimeKind.Utc),
-               Year = 2020,
-               Number = 3,
-               ClosedAt = null,
-               Weeks = new List<Week>()
+            var bonusPeriod = new BonusPeriod
+            {
+                Id = "2021-08-02",
+                StartAt = new DateTime(2021, 8, 1, 23, 0, 0, DateTimeKind.Utc),
+                Year = 2020,
+                Number = 3,
+                ClosedAt = null,
+                Weeks = new List<Week>()
                {
                    new Week
                    {
@@ -104,9 +104,9 @@ namespace BonusCalcListener.Tests
                        ClosedAt = null
                    }
                }
-           };
+            };
 
-           var timesheets = new List<Timesheet>()
+            var timesheets = new List<Timesheet>()
            {
                new Timesheet
                {
