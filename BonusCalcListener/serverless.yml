@@ -1,7 +1,5 @@
 service: bonus-calc-listener
 
-frameworkVersion: '2'
-
 provider:
   name: aws
   runtime: dotnet8
