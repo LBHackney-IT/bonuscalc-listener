@@ -135,7 +135,7 @@ namespace BonusCalcListener.Tests
                 },
             };
 
-            await BonusCalcContext.Trades.AddAsync(trade).ConfigureAwait(false);
+            // await BonusCalcContext.Trades.AddAsync(trade).ConfigureAwait(false);
             await BonusCalcContext.Schemes.AddAsync(scheme).ConfigureAwait(false);
             await BonusCalcContext.Operatives.AddAsync(operative).ConfigureAwait(false);
             await BonusCalcContext.BonusPeriods.AddAsync(bonusPeriod).ConfigureAwait(false);
