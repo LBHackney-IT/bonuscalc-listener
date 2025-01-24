@@ -24,7 +24,7 @@ namespace BonusCalcListener.Tests
 
             BonusCalcContext = new BonusCalcContext(builder.Options);
 
-            BonusCalcContext.Database.Migrate();
+            // BonusCalcContext.Database.Migrate();
 
             _transaction = BonusCalcContext.Database.BeginTransaction();
 
