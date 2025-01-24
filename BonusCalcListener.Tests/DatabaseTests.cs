@@ -18,15 +18,18 @@ namespace BonusCalcListener.Tests
         public async Task RunBeforeAnyTests()
         {
             var builder = new DbContextOptionsBuilder();
-            builder.UseNpgsql(ConnectionString.TestDatabase())
+            builder
+                .UseNpgsql(ConnectionString.TestDatabase())
                 .UseSnakeCaseNamingConvention();
+
             BonusCalcContext = new BonusCalcContext(builder.Options);
 
             BonusCalcContext.Database.Migrate();
+
             _transaction = BonusCalcContext.Database.BeginTransaction();
 
             // Empty trades table for tests
-            // BonusCalcContext.Trades.RemoveRange(BonusCalcContext.Trades);
+            BonusCalcContext.Trades.RemoveRange(BonusCalcContext.Trades);
 
             await SeedData().ConfigureAwait(false);
         }
@@ -141,7 +144,7 @@ namespace BonusCalcListener.Tests
             BonusCalcContext.BonusPeriods.Add(bonusPeriod);
             BonusCalcContext.Timesheets.AddRange(timesheets);
 
-            await BonusCalcContext.SaveChangesAsync().ConfigureAwait(false);
+            await BonusCalcContext.SaveChangesAsync();
         }
     }
 }
