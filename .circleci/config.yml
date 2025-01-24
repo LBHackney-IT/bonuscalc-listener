@@ -104,7 +104,6 @@ jobs:
       - run:
           name: build and run
           command: |
-            docker-compose up -d test-database
             docker-compose build bonus-calc-listener-test
             docker-compose run bonus-calc-listener-test
       # - run:
