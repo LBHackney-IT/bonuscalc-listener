@@ -97,18 +97,16 @@ jobs:
           name: Run formatter check
           command: ./dotnet-format-local/dotnet-format --check
   build-and-test:
-    executor: docker-python
+    machine:
+        image: ubuntu-2204:2023.10.1
     steps:
       - checkout
-      - setup_remote_docker
       - run:
-          name: build and run
-          command: |
-            docker-compose build bonus-calc-listener-test
-            docker-compose run bonus-calc-listener-test
-      # - run:
-      #     name: Run tests
-      #     command: docker-compose run bonus-calc-listener-test
+          name: build
+          command: docker-compose build bonus-calc-listener-test
+      - run:
+          name: Run tests
+          command: docker-compose run bonus-calc-listener-test
   assume-role-development:
     executor: docker-python
     steps:
