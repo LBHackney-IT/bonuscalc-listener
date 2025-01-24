@@ -22,7 +22,7 @@ namespace BonusCalcListener.Tests
                 .UseSnakeCaseNamingConvention();
             BonusCalcContext = new BonusCalcContext(builder.Options);
 
-            BonusCalcContext.Database.Migrate();
+            await BonusCalcContext.Database.MigrateAsync();
             _transaction = BonusCalcContext.Database.BeginTransaction();
 
             // Empty trades table for tests

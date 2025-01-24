@@ -1,19 +1,13 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0
+FROM mcr.microsoft.com/dotnet/sdk:8.0
 
+# disable microsoft telematry
 ENV DOTNET_CLI_TELEMETRY_OPTOUT='true'
 
 ARG LBHPACKAGESTOKEN
 ENV LBHPACKAGESTOKEN=$LBHPACKAGESTOKEN
 WORKDIR /app
 
-# Install PostgreSQL client
-RUN apt-get update && apt-get install -y postgresql-client
-
-# Copy wait script
-COPY wait-for-postgres.sh .
-RUN chmod +x wait-for-postgres.sh
-
-# Copy csproj and restore
+# Copy csproj and restore as distinct layers
 COPY ./BonusCalcListener.sln ./
 COPY ./BonusCalcListener/BonusCalcListener.csproj ./BonusCalcListener/
 COPY ./BonusCalcListener.Tests/BonusCalcListener.Tests.csproj ./BonusCalcListener.Tests/
@@ -28,4 +22,4 @@ COPY . .
 
 RUN dotnet build -c debug -o out BonusCalcListener.Tests/BonusCalcListener.Tests.csproj
 
-CMD ["./wait-for-postgres.sh", "test-database", "dotnet", "test"]
+CMD dotnet test
