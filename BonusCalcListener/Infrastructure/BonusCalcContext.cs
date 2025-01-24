@@ -4,7 +4,7 @@ namespace BonusCalcListener.Infrastructure
 {
     public class BonusCalcContext : DbContext
     {
-        public BonusCalcContext(DbContextOptions options) : base(options)
+        public BonusCalcContext(DbContextOptions<BonusCalcContext> options) : base(options)
         {
         }
 
