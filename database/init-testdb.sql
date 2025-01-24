@@ -2,6 +2,8 @@
 -- PostgreSQL database dump
 --
 
+\echo 'Starting database initialization...';
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -558,3 +560,5 @@ ALTER TABLE ONLY public.weeks
 --
 -- PostgreSQL database dump complete
 --
+
+\echo 'Database initialization complete';
