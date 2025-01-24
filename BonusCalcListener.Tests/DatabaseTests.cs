@@ -25,9 +25,6 @@ namespace BonusCalcListener.Tests
             await BonusCalcContext.Database.MigrateAsync();
             _transaction = BonusCalcContext.Database.BeginTransaction();
 
-            // Empty trades table for tests
-            BonusCalcContext.Trades.RemoveRange(BonusCalcContext.Trades);
-
             await SeedData();
         }
 
@@ -135,12 +132,15 @@ namespace BonusCalcListener.Tests
                 },
             };
 
+            // Empty trades table for tests
+            BonusCalcContext.Trades.RemoveRange(BonusCalcContext.Trades);
+
             BonusCalcContext.Trades.Add(trade);
             BonusCalcContext.Schemes.Add(scheme);
             BonusCalcContext.Operatives.Add(operative);
             BonusCalcContext.BonusPeriods.Add(bonusPeriod);
             BonusCalcContext.Timesheets.AddRange(timesheets);
-            
+
             await BonusCalcContext.SaveChangesAsync();
         }
     }
