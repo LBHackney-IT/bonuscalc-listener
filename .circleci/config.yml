@@ -1,8 +1,8 @@
 version: 2.1
 
 orbs:
-  aws-ecr: circleci/aws-ecr@3.0.0
-  aws-cli: circleci/aws-cli@0.1.9
+  aws-cli: circleci/aws-cli@5.1.1
+  node: circleci/node@6.3.0
   aws_assume_role: lbh-hackit/aws_assume_role@0.1.0
 
 executors:
@@ -68,11 +68,7 @@ commands:
       - *attach_workspace
       - checkout
       - setup_remote_docker
-      - run:
-          name: Install Node.js
-          command: |
-            curl -sL https://deb.nodesource.com/setup_14.x | bash -
-            apt-get update && apt-get install -y nodejs
+      - node/install
       - run:
           name: Install serverless CLI
           command: npm i -g serverless@"<3.0.0"
@@ -87,7 +83,7 @@ commands:
           name: Deploy lambda
           command: |
             cd ./BonusCalcListener/
-            sls deploy --stage <<parameters.stage>> --conceal
+            npx --yes serverless deploy --stage <<parameters.stage>> --conceal
 
 jobs:
   check-code-formatting:
@@ -102,7 +98,7 @@ jobs:
           command: ./dotnet-format-local/dotnet-format --check
   build-and-test:
     machine:
-      image: ubuntu-2004:202104-01
+        image: ubuntu-2204:2023.10.1
     steps:
       - checkout
       - run:
@@ -161,14 +157,15 @@ jobs:
           aws-account: $AWS_ACCOUNT_PRODUCTION
 
 workflows:
-  check-and-deploy-development:
+  code-checks:
     jobs:
       - check-code-formatting
       - build-and-test
+
+  deploy-to-development:
+    jobs:
       - assume-role-development:
           context: api-assume-role-housing-development-context
-          requires:
-            - build-and-test
           filters:
             branches:
               only: master
@@ -179,25 +176,21 @@ workflows:
             branches:
               only: master
       - deploy-to-development:
+          context:
+            - "Serverless Framework"
           requires:
             - terraform-init-and-apply-to-development
           filters:
             branches:
               only: master
-  check-and-deploy-staging-and-production:
-      jobs:
-      - check-code-formatting
-      - build-and-test:
+
+  deploy-to-staging-and-production:
+    jobs:
+      - assume-role-staging:
+          context: api-assume-role-housing-staging-context
           filters:
             branches:
               only: master
-      - assume-role-staging:
-          context: api-assume-role-housing-staging-context
-          requires:
-              - build-and-test
-          filters:
-             branches:
-               only: master
       - terraform-init-and-apply-to-staging:
           requires:
             - assume-role-staging
@@ -205,6 +198,8 @@ workflows:
             branches:
               only: master
       - deploy-to-staging:
+          context:
+            - "Serverless Framework"
           requires:
             - terraform-init-and-apply-to-staging
           filters:
@@ -217,10 +212,10 @@ workflows:
       - assume-role-production:
           context: api-assume-role-housing-production-context
           requires:
-              - permit-production-terraform-release
+            - permit-production-terraform-release
           filters:
-             branches:
-               only: master
+            branches:
+              only: master
       - terraform-init-and-apply-to-production:
           requires:
             - assume-role-production
@@ -236,6 +231,8 @@ workflows:
             branches:
               only: master
       - deploy-to-production:
+          context:
+            - "Serverless Framework"
           requires:
             - permit-production-release
             - terraform-init-and-apply-to-production
