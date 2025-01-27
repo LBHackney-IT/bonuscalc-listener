@@ -18,8 +18,10 @@ namespace BonusCalcListener.Tests
         public async Task RunBeforeAnyTests()
         {
             var builder = new DbContextOptionsBuilder();
-            builder.UseNpgsql(ConnectionString.TestDatabase())
+            builder
+                .UseNpgsql(ConnectionString.TestDatabase())
                 .UseSnakeCaseNamingConvention();
+
             BonusCalcContext = new BonusCalcContext(builder.Options);
 
             await BonusCalcContext.Database.MigrateAsync();
@@ -72,65 +74,65 @@ namespace BonusCalcListener.Tests
                 Number = 3,
                 ClosedAt = null,
                 Weeks = new List<Week>()
-                {
-                    new Week
-                    {
-                        Id = "2021-10-04",
-                        StartAt = new DateTime(2021, 10, 3, 23, 0, 0, DateTimeKind.Utc),
-                        Number = 10,
-                        ClosedAt = new DateTime(2021, 10, 11, 16, 0, 0, DateTimeKind.Utc)
-                    },
-                    new Week
-                    {
-                        Id = "2021-10-11",
-                        StartAt = new DateTime(2021, 10, 10, 23, 0, 0, DateTimeKind.Utc),
-                        Number = 11,
-                        ClosedAt = null
-                    },
-                    new Week
-                    {
-                        Id = "2021-10-18",
-                        StartAt = new DateTime(2021, 10, 17, 23, 0, 0, DateTimeKind.Utc),
-                        Number = 12,
-                        ClosedAt = null
-                    },
-                    new Week
-                    {
-                        Id = "2021-10-25",
-                        StartAt = new DateTime(2021, 10, 24, 23, 0, 0, DateTimeKind.Utc),
-                        Number = 13,
-                        ClosedAt = null
-                    }
-                }
+               {
+                   new Week
+                   {
+                       Id = "2021-10-04",
+                       StartAt = new DateTime(2021, 10, 3, 23, 0, 0, DateTimeKind.Utc),
+                       Number = 10,
+                       ClosedAt = new DateTime(2021, 10, 11, 16, 0, 0, DateTimeKind.Utc)
+                   },
+                   new Week
+                   {
+                       Id = "2021-10-11",
+                       StartAt = new DateTime(2021, 10, 10, 23, 0, 0, DateTimeKind.Utc),
+                       Number = 11,
+                       ClosedAt = null
+                   },
+                   new Week
+                   {
+                       Id = "2021-10-18",
+                       StartAt = new DateTime(2021, 10, 17, 23, 0, 0, DateTimeKind.Utc),
+                       Number = 12,
+                       ClosedAt = null
+                   },
+                   new Week
+                   {
+                       Id = "2021-10-25",
+                       StartAt = new DateTime(2021, 10, 24, 23, 0, 0, DateTimeKind.Utc),
+                       Number = 13,
+                       ClosedAt = null
+                   }
+               }
             };
 
             var timesheets = new List<Timesheet>()
-            {
-                new Timesheet
-                {
-                    Id = "123456/2021-10-04",
-                    OperativeId = "123456",
-                    WeekId = "2021-10-04"
-                },
-                new Timesheet
-                {
-                    Id = "123456/2021-10-11",
-                    OperativeId = "123456",
-                    WeekId = "2021-10-11"
-                },
-                new Timesheet
-                {
-                    Id = "123456/2021-10-18",
-                    OperativeId = "123456",
-                    WeekId = "2021-10-18"
-                },
-                new Timesheet
-                {
-                    Id = "123456/2021-10-25",
-                    OperativeId = "123456",
-                    WeekId = "2021-10-25"
-                },
-            };
+           {
+               new Timesheet
+               {
+                   Id = "123456/2021-10-04",
+                   OperativeId = "123456",
+                   WeekId = "2021-10-04"
+               },
+               new Timesheet
+               {
+                   Id = "123456/2021-10-11",
+                   OperativeId = "123456",
+                   WeekId = "2021-10-11"
+               },
+               new Timesheet
+               {
+                   Id = "123456/2021-10-18",
+                   OperativeId = "123456",
+                   WeekId = "2021-10-18"
+               },
+               new Timesheet
+               {
+                   Id = "123456/2021-10-25",
+                   OperativeId = "123456",
+                   WeekId = "2021-10-25"
+               },
+           };
 
             // Empty trades table for tests
             BonusCalcContext.Trades.RemoveRange(BonusCalcContext.Trades);

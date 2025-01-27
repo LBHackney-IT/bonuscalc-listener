@@ -2,7 +2,7 @@ service: bonus-calc-listener
 
 provider:
   name: aws
-  runtime: dotnet6
+  runtime: dotnet8
   memorySize: 2048
   tracing:
     lambda: true
@@ -14,7 +14,7 @@ provider:
   timeout: 15
 
 package:
-  artifact: ./bin/release/net6.0/bonus-calc-listener.zip
+  artifact: ./bin/release/net8.0/bonus-calc-listener.zip
 
 functions:
   BonusCalcListener:
