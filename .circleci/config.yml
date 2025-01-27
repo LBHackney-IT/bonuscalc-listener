@@ -188,23 +188,23 @@ workflows:
     jobs:
       - assume-role-staging:
           context: api-assume-role-housing-staging-context
-          filters:
-            branches:
-              only: master
+          # filters:
+          #   branches:
+          #     only: master
       - terraform-init-and-apply-to-staging:
           requires:
             - assume-role-staging
-          filters:
-            branches:
-              only: master
+          # filters:
+          #   branches:
+          #     only: master
       - deploy-to-staging:
           context:
             - "Serverless Framework"
           requires:
             - terraform-init-and-apply-to-staging
-          filters:
-            branches:
-              only: master
+          # filters:
+          #   branches:
+          #     only: master
       - permit-production-terraform-release:
           type: approval
           requires:
