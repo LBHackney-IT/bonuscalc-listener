@@ -44,6 +44,7 @@ namespace BonusCalcListener
 
             services.AddHttpClient();
             services.AddScoped<IUpdateExistingWorkOrderPayElements, UpdateExistingWorkOrderPayElementsUseCase>();
+            services.AddScoped<IOperativesGateway, OperativesGateway>();
             services.AddScoped<ITimesheetGateway, TimesheetGateway>();
             services.AddScoped<IMapPayElements, PayElementMapper>();
             services.AddScoped<IDbSaver, DbSaver>();
