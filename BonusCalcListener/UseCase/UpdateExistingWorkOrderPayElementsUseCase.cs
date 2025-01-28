@@ -23,9 +23,9 @@ namespace BonusCalcListener.UseCase
         }
 
         public UpdateExistingWorkOrderPayElementsUseCase(
-            ITimesheetGateway timesheetGateway, 
-            IMapPayElements payElementMapper, 
-            IDbSaver dbSaver, 
+            ITimesheetGateway timesheetGateway,
+            IMapPayElements payElementMapper,
+            IDbSaver dbSaver,
             ILogger<UpdateExistingWorkOrderPayElementsUseCase> logger)
         {
             _timesheetGateway = timesheetGateway;
