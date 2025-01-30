@@ -98,7 +98,7 @@ jobs:
           command: ./dotnet-format-local/dotnet-format --check
   build-and-test:
     machine:
-        image: ubuntu-2204:2023.10.1
+      image: ubuntu-2204:2023.10.1
     steps:
       - checkout
       - run:

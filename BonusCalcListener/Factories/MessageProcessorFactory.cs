@@ -8,24 +8,22 @@ namespace BonusCalcListener.Factories
     //Chooses most suitable service for message processing, given the message type
     public static class MessageProcessorFactory
     {
-        public static IMessageProcessing CreateMessageProcessor(EntityEventSns evt, IServiceProvider serviceProvider)
+        public static IMessageProcessing CreateMessageProcessor(EntityEventSns entityEvent, IServiceProvider serviceProvider)
         {
-            if (evt is null) throw new ArgumentNullException(nameof(evt));
-            if (serviceProvider is null) throw new ArgumentNullException(nameof(serviceProvider));
+            ArgumentNullException.ThrowIfNull(entityEvent);
+            ArgumentNullException.ThrowIfNull(serviceProvider);
 
-            IMessageProcessing processor = null;
-
-            switch (evt.EventType)
+            switch (entityEvent.EventType)
             {
                 case RepairsEventTypes.WorkOrderUpdatedEvent:
-                    processor = serviceProvider.GetService<IUpdateExistingWorkOrderPayElements>();
-                    break;
+                    return serviceProvider.GetService<IUpdateExistingWorkOrderPayElements>();
+
 
                 default:
-                    throw new ArgumentException($"Unknown event type: {evt.EventType}");
+                    throw new ArgumentException($"Unknown event type: {entityEvent.EventType}");
             }
 
-            return processor;
+
         }
     }
 }

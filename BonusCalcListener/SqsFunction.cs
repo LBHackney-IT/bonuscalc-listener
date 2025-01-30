@@ -44,6 +44,7 @@ namespace BonusCalcListener
 
             services.AddHttpClient();
             services.AddScoped<IUpdateExistingWorkOrderPayElements, UpdateExistingWorkOrderPayElementsUseCase>();
+            // services.AddScoped<IOperativesGateway, OperativesGateway>();
             services.AddScoped<ITimesheetGateway, TimesheetGateway>();
             services.AddScoped<IMapPayElements, PayElementMapper>();
             services.AddScoped<IDbSaver, DbSaver>();
@@ -81,16 +82,14 @@ namespace BonusCalcListener
         private async Task ProcessMessageAsync(SQSEvent.SQSMessage message, ILambdaContext context)
         {
             context.Logger.LogLine($"Processing message {message.MessageId}");
-
             var entityEvent = JsonSerializer.Deserialize<EntityEventSns>(message.Body, _jsonOptions);
-
             var traceUsingXray = message.Attributes.TryGetValue("AWSTraceHeader", out string traceHeader);
 
             using (Logger.BeginScope("CorrelationId: {CorrelationId}", traceUsingXray ? TraceHeader.FromString(traceHeader).RootTraceId : Guid.NewGuid().ToString()))
             {
                 try
                 {
-                    IMessageProcessing processor = MessageProcessorFactory.CreateMessageProcessor(entityEvent, ServiceProvider);
+                    var processor = MessageProcessorFactory.CreateMessageProcessor(entityEvent, ServiceProvider);
 
                     if (processor != null)
                     {

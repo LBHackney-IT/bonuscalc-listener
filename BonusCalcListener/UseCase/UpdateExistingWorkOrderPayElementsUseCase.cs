@@ -22,13 +22,16 @@ namespace BonusCalcListener.UseCase
             return new DateTime(2021, 11, 1, 0, 0, 0, DateTimeKind.Utc);
         }
 
-        public UpdateExistingWorkOrderPayElementsUseCase(ITimesheetGateway timesheetGateway, IMapPayElements payElementMapper, IDbSaver dbSaver, ILogger<UpdateExistingWorkOrderPayElementsUseCase> logger, IOperativesGateway operativesGateway)
+        public UpdateExistingWorkOrderPayElementsUseCase(
+            ITimesheetGateway timesheetGateway,
+            IMapPayElements payElementMapper,
+            IDbSaver dbSaver,
+            ILogger<UpdateExistingWorkOrderPayElementsUseCase> logger)
         {
             _timesheetGateway = timesheetGateway;
             _payElementMapper = payElementMapper;
             _dbSaver = dbSaver;
             _logger = logger;
-            _operativesGateway = operativesGateway;
         }
 
         public async Task ProcessMessageAsync(EntityEventSns message)
@@ -70,7 +73,7 @@ namespace BonusCalcListener.UseCase
             * N.B if they have been archived for a while, it may be the case that the timesheet search will fail. However, new timesheets will generate
             * thus preventing a persistent issue for the operative
             */
-            await _operativesGateway.ActivateOperative(data.OperativePrn);
+            // await _operativesGateway.ActivateOperative(data.OperativePrn);
 
             // Get the timesheet based on the operative id and closed time of the work order
             var operativeTimesheet = await _timesheetGateway.GetCurrentTimeSheetForOperative(data.OperativePrn, data.ClosedTime);
