@@ -82,14 +82,7 @@ namespace BonusCalcListener
         private async Task ProcessMessageAsync(SQSEvent.SQSMessage message, ILambdaContext context)
         {
             context.Logger.LogLine($"Processing message {message.MessageId}");
-            context.Logger.LogLine(message.Body);
-
             var entityEvent = JsonSerializer.Deserialize<EntityEventSns>(message.Body, _jsonOptions);
-
-            var jsonString = JsonSerializer.Serialize(entityEvent);
-            context.Logger.LogLine($"entityEvent = {jsonString}");
-
-
             var traceUsingXray = message.Attributes.TryGetValue("AWSTraceHeader", out string traceHeader);
 
             using (Logger.BeginScope("CorrelationId: {CorrelationId}", traceUsingXray ? TraceHeader.FromString(traceHeader).RootTraceId : Guid.NewGuid().ToString()))
