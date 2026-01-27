@@ -102,7 +102,7 @@ resource "aws_sqs_queue_policy" "repairs_queue_policy" {
           "Resource": "${aws_sqs_queue.repairs_queue.arn}",
           "Condition": {
           "ArnEquals": {
-              "aws:SourceArn": "${data.aws_ssm_parameter.repairs_sns_topic_arn.value}"
+              "aws:SourceArn": "${aws_ssm_parameter.repairs_sns_topic_arn.value}"
           }
           }
       }
@@ -114,7 +114,7 @@ resource "aws_sqs_queue_policy" "repairs_queue_policy" {
 ### This is the subscription definition that tells the topic which queue to use
 # 
 resource "aws_sns_topic_subscription" "repairs_queue_subscribe_to_repairs_sns" {
-  topic_arn = data.aws_ssm_parameter.repairs_sns_topic_arn.value
+  topic_arn = aws_ssm_parameter.repairs_sns_topic_arn.value
   protocol  = "sqs"
   endpoint  = aws_sqs_queue.repairs_queue.arn
   raw_message_delivery = true
