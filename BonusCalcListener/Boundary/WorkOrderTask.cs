@@ -4,6 +4,7 @@ using System.Text;
 
 namespace BonusCalcListener.Boundary
 {
+    // Random comment
     public class WorkOrderTask
     {
         public double Quantity { get; internal set; }
