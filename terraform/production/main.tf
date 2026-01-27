@@ -42,11 +42,8 @@ terraform {
 ### This is the parameter containing the arn of the topic to which we want to subscribe
 ### This will have been created by the service the generates the events in which we are interested
 #
-# data "aws_ssm_parameter" "repairs_sns_topic_arn" {
-#   name = "/sns-topic/production/repairs/arn"
-# }
 
-# Add sns topic (created from repairs api repo)
+
 resource "aws_sns_topic" "repairs" {
   name                        = "repairs.fifo"
   fifo_topic                  = true
@@ -54,10 +51,14 @@ resource "aws_sns_topic" "repairs" {
   kms_master_key_id           = "alias/aws/sns"
 }
 
-resource "aws_ssm_parameter" "repairs_sns_topic_arn" {
+resource "aws_ssm_parameter" "repairs_sns_arn" {
   name  = "/sns-topic/production/repairs/arn"
   type  = "String"
   value = aws_sns_topic.repairs.arn
+}
+
+data "aws_ssm_parameter" "repairs_sns_topic_arn" {
+  name = "/sns-topic/production/repairs/arn"
 }
 
 ### This is the definition of the dead letter queue used whem message processsing fails for a given message
@@ -102,7 +103,7 @@ resource "aws_sqs_queue_policy" "repairs_queue_policy" {
           "Resource": "${aws_sqs_queue.repairs_queue.arn}",
           "Condition": {
           "ArnEquals": {
-              "aws:SourceArn": "${aws_ssm_parameter.repairs_sns_topic_arn.value}"
+              "aws:SourceArn": "${data.aws_ssm_parameter.repairs_sns_topic_arn.value}"
           }
           }
       }
@@ -114,7 +115,7 @@ resource "aws_sqs_queue_policy" "repairs_queue_policy" {
 ### This is the subscription definition that tells the topic which queue to use
 # 
 resource "aws_sns_topic_subscription" "repairs_queue_subscribe_to_repairs_sns" {
-  topic_arn = aws_ssm_parameter.repairs_sns_topic_arn.value
+  topic_arn = data.aws_ssm_parameter.repairs_sns_topic_arn.value
   protocol  = "sqs"
   endpoint  = aws_sqs_queue.repairs_queue.arn
   raw_message_delivery = true
