@@ -42,8 +42,22 @@ terraform {
 ### This is the parameter containing the arn of the topic to which we want to subscribe
 ### This will have been created by the service the generates the events in which we are interested
 #
-data "aws_ssm_parameter" "repairs_sns_topic_arn" {
-  name = "/sns-topic/production/repairs/arn"
+# data "aws_ssm_parameter" "repairs_sns_topic_arn" {
+#   name = "/sns-topic/production/repairs/arn"
+# }
+
+# Add sns topic (created from repairs api repo)
+resource "aws_sns_topic" "repairs" {
+  name                        = "repairs.fifo"
+  fifo_topic                  = true
+  content_based_deduplication = true
+  kms_master_key_id           = "alias/aws/sns"
+}
+
+resource "aws_ssm_parameter" "repairs_sns_arn" {
+  name  = "/sns-topic/production/repairs/arn"
+  type  = "String"
+  value = aws_sns_topic.repairs.arn
 }
 
 ### This is the definition of the dead letter queue used whem message processsing fails for a given message
