@@ -51,11 +51,11 @@ resource "aws_sns_topic" "repairs" {
   kms_master_key_id           = "alias/aws/sns"
 }
 
-# resource "aws_ssm_parameter" "repairs_sns_arn" {
-#   name  = "/sns-topic/production/repairs/arn"
-#   type  = "String"
-#   value = aws_sns_topic.repairs.arn
-# }
+resource "aws_ssm_parameter" "repairs_sns_arn" {
+  name  = "/sns-topic/production/repairs/arn"
+  type  = "String"
+  value = aws_sns_topic.repairs.arn
+}
 
 data "aws_ssm_parameter" "repairs_sns_topic_arn" {
   name = "/sns-topic/production/repairs/arn"
@@ -115,7 +115,8 @@ resource "aws_sqs_queue_policy" "repairs_queue_policy" {
 ### This is the subscription definition that tells the topic which queue to use
 # 
 resource "aws_sns_topic_subscription" "repairs_queue_subscribe_to_repairs_sns" {
-  topic_arn = data.aws_ssm_parameter.repairs_sns_topic_arn.value
+  # topic_arn = data.aws_ssm_parameter.repairs_sns_topic_arn.value
+  topic_arn = aws_sns_topic.repairs.arn
   protocol  = "sqs"
   endpoint  = aws_sqs_queue.repairs_queue.arn
   raw_message_delivery = true
