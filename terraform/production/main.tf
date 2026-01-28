@@ -57,9 +57,9 @@ resource "aws_ssm_parameter" "repairs_sns_arn" {
   value = aws_sns_topic.repairs.arn
 }
 
-data "aws_ssm_parameter" "repairs_sns_topic_arn" {
-  name = "/sns-topic/production/repairs/arn"
-}
+# data "aws_ssm_parameter" "repairs_sns_topic_arn" {
+#   name = "/sns-topic/production/repairs/arn"
+# }
 
 ### This is the definition of the dead letter queue used whem message processsing fails for a given message
 #
