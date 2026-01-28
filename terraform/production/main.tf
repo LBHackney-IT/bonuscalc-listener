@@ -55,6 +55,7 @@ resource "aws_ssm_parameter" "repairs_sns_arn" {
   name  = "/sns-topic/production/repairs/arn"
   type  = "String"
   value = aws_sns_topic.repairs.arn
+  overwrite = true
 }
 
 # data "aws_ssm_parameter" "repairs_sns_topic_arn" {
