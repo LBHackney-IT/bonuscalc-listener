@@ -103,7 +103,7 @@ resource "aws_sqs_queue_policy" "repairs_queue_policy" {
           "Resource": "${aws_sqs_queue.repairs_queue.arn}",
           "Condition": {
           "ArnEquals": {
-              "aws:SourceArn": "${data.aws_ssm_parameter.repairs_sns_topic_arn.value}"
+              "aws:SourceArn": "${aws_sns_topic.repairs.arn}"
           }
           }
       }
