@@ -51,11 +51,11 @@ resource "aws_sns_topic" "repairs" {
   kms_master_key_id           = "alias/aws/sns"
 }
 
-resource "aws_ssm_parameter" "repairs_sns_arn" {
-  name  = "/sns-topic/production/repairs/arn"
-  type  = "String"
-  value = aws_sns_topic.repairs.arn
-}
+# resource "aws_ssm_parameter" "repairs_sns_arn" {
+#   name  = "/sns-topic/production/repairs/arn"
+#   type  = "String"
+#   value = aws_sns_topic.repairs.arn
+# }
 
 data "aws_ssm_parameter" "repairs_sns_topic_arn" {
   name = "/sns-topic/production/repairs/arn"
