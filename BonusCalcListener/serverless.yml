@@ -66,15 +66,15 @@ resources:
                           - Ref: 'AWS::Region'
                           - Ref: 'AWS::AccountId'
                           - 'log-group:/aws/lambda/*:*:*'
-                - Effect: "Allow"
-                  Action:
-                    - "s3:PutObject"
-                    - "s3:GetObject"
-                  Resource:
-                    Fn::Join:
-                      - ""
-                      - - "arn:aws:s3:::"
-                        - "Ref": "ServerlessDeploymentBucket"
+                # - Effect: "Allow"
+                #   Action:
+                #     - "s3:PutObject"
+                #     - "s3:GetObject"
+                #   Resource:
+                #     Fn::Join:
+                #       - ""
+                #       - - "arn:aws:s3:::"
+                #         - "Ref": "ServerlessDeploymentBucket"
           - PolicyName: lambdaInvocation
             PolicyDocument:
               Version: '2012-10-17'
@@ -101,19 +101,9 @@ resources:
 
 custom:
   vpc:
-    development:
-      subnetIds:
-        - subnet-0deabb5d8fb9c3446
-        - subnet-000b89c249f12a8ad
-    staging:
-      subnetIds:
-        - subnet-0ea0020a44b98a2ca # b-housing-staging
-        - subnet-0743d86e9b362fa38 # a-housing-staging
-      securityGroupIds:
-        - sg-0292b24504fdce1eb # allow_bonuscalc_db_traffic
     production:
       subnetIds:
-        - subnet-0beb266003a56ca82 # a-housing-production
-        - subnet-06a697d86a9b6ed01 # b-housing-production
+        - subnet-05e595c59b7d6c8df
+        - subnet-0e6bc9b4ac24493cc
       securityGroupIds:
-        - sg-064b1c3ec1577380b # allow_bonuscalc_db_traffic
+        - sg-0b7be628d680f9e5f
