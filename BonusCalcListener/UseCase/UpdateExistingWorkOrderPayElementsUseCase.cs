@@ -1,6 +1,7 @@
 using BonusCalcListener.Boundary;
 using BonusCalcListener.Gateway.Interfaces;
 using BonusCalcListener.Infrastructure;
+using BonusCalcListener.Infrastructure.Exceptions;
 using BonusCalcListener.UseCase.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
@@ -34,20 +35,20 @@ namespace BonusCalcListener.UseCase
             _logger = logger;
         }
 
-        public async Task ProcessMessageAsync(EntityEventSns message)
+        public async Task ProcessMessageAsync(EntityEventSns message, string messageId)
         {
             var data = message.EventData;
 
             if (data.WorkOrderId == null)
             {
-                throw new ArgumentNullException("WorkOrderId");
+                throw new MissingWorkOrderIdException(message, messageId);
             }
 
             _logger.LogInformation($"Starting to process update to work order ID: {data.WorkOrderId}");
 
             if (data.ClosedTime == null)
             {
-                throw new ArgumentNullException("ClosedTime");
+                throw new MissingClosedTimeException(message, messageId);
             }
 
             if (data.ClosedTime < BonusSchemeStartTime())
@@ -80,7 +81,7 @@ namespace BonusCalcListener.UseCase
 
             if (operativeTimesheet == null)
             {
-                throw new InvalidOperationException($"No operative timesheet found to add work elements to! OperativeID: {data.OperativePrn} ClosedTime: {data.ClosedTime}");
+                throw new OperativeTimesheetNotFoundException(message, messageId);
             }
 
             _logger.LogInformation($"Found timesheet {operativeTimesheet.Id} for {data.WorkOrderId}");

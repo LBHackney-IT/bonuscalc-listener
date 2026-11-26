@@ -94,7 +94,7 @@ namespace BonusCalcListener
                     if (processor != null)
                     {
                         Logger.LogInformation($"Found a processor for message {message.MessageId}, type: {entityEvent.EventType}");
-                        await processor.ProcessMessageAsync(entityEvent).ConfigureAwait(false);
+                        await processor.ProcessMessageAsync(entityEvent, message.MessageId).ConfigureAwait(false);
                     }
                     else
                     {
@@ -103,7 +103,8 @@ namespace BonusCalcListener
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(ex, $"Exception processing message id: {message.MessageId}; type: {entityEvent.EventType}; entity id: {entityEvent.EntityId}");
+                    Logger.LogError(ex, "Exception processing message id: {MessageId}; type: {EventType}; work order id: {WorkOrderId}; operative: {OperativePrn}; exception: {ExceptionType}",
+                        message.MessageId, entityEvent.EventType, entityEvent.EventData?.WorkOrderId, entityEvent.EventData?.OperativePrn, ex.GetType().Name);
                     throw; // AWS will handle retry/moving to the dead letter queue
                 }
             }
