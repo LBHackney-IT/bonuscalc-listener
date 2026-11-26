@@ -41,32 +41,38 @@ namespace BonusCalcListener.UseCase
 
             if (data.WorkOrderId == null)
             {
+                _logger.LogError("Work order event has no WorkOrderId. MessageId: {MessageId}; EventId: {EventId}; OperativePrn: {OperativePrn}; ClosedTime: {ClosedTime}",
+                    messageId, message.Id, data.OperativePrn, data.ClosedTime);
                 throw new MissingWorkOrderIdException(message, messageId);
             }
 
-            _logger.LogInformation($"Starting to process update to work order ID: {data.WorkOrderId}");
+            _logger.LogInformation("Starting to process update to work order ID: {WorkOrderId}", data.WorkOrderId);
 
             if (data.ClosedTime == null)
             {
+                _logger.LogError("Work order event has no ClosedTime. WorkOrderId: {WorkOrderId}; MessageId: {MessageId}; EventId: {EventId}; OperativePrn: {OperativePrn}",
+                    data.WorkOrderId, messageId, message.Id, data.OperativePrn);
                 throw new MissingClosedTimeException(message, messageId);
             }
 
             if (data.ClosedTime < BonusSchemeStartTime())
             {
+                _logger.LogInformation("WorkOrder {WorkOrderId} will not be recorded because it was closed before the bonus scheme start time. ClosedTime: {ClosedTime}; BonusSchemeStartTime: {BonusSchemeStartTime}; OperativePrn: {OperativePrn}; MessageId: {MessageId}",
+                    data.WorkOrderId, data.ClosedTime, BonusSchemeStartTime(), data.OperativePrn, messageId);
                 return; // This is a work order from before the restarting of the bonus scheme
             }
 
             // CloseToBase workOrders should not be counted in bonusCalculation
             if (data.PaymentType != null && data.PaymentType == Domain.PaymentType.CloseToBase)
             {
-                _logger.LogInformation($"WorkOrder {data.WorkOrderId} will not be recorded because the paymentType is 'CloseToBase'.");
+                _logger.LogInformation("WorkOrder {WorkOrderId} will not be recorded because the paymentType is 'CloseToBase'.", data.WorkOrderId);
                 return;
             }
 
             // Ignore agency workers (those with a payroll number starting with 'T')
             if (data.OperativePrn.StartsWith("T"))
             {
-                _logger.LogInformation($"WorkOrder {data.WorkOrderId} will not be recorded because the operative is agency: {data.OperativePrn}");
+                _logger.LogInformation("WorkOrder {WorkOrderId} will not be recorded because the operative is agency: {OperativePrn}", data.WorkOrderId, data.OperativePrn);
                 return;
             }
 
@@ -81,10 +87,12 @@ namespace BonusCalcListener.UseCase
 
             if (operativeTimesheet == null)
             {
+                _logger.LogError("No operative timesheet found to add work elements to. WorkOrderId: {WorkOrderId}; OperativePrn: {OperativePrn}; ClosedTime: {ClosedTime}; StatusCode: {StatusCode}; MessageId: {MessageId}; EventId: {EventId}",
+                    data.WorkOrderId, data.OperativePrn, data.ClosedTime, data.WorkOrderStatusCode, messageId, message.Id);
                 throw new OperativeTimesheetNotFoundException(message, messageId);
             }
 
-            _logger.LogInformation($"Found timesheet {operativeTimesheet.Id} for {data.WorkOrderId}");
+            _logger.LogInformation("Found timesheet {TimesheetId} for {WorkOrderId}", operativeTimesheet.Id, data.WorkOrderId);
 
             // Ensure that the pay elements list exists
             operativeTimesheet.PayElements ??= new List<PayElement>();
@@ -98,7 +106,7 @@ namespace BonusCalcListener.UseCase
                 var npe = _payElementMapper.BuildPayElement(message.EventData);
                 operativeTimesheet.PayElements.Add(npe);
 
-                _logger.LogInformation($"Added {npe.Value} SMVs to operative {data.OperativePrn} for work order {data.WorkOrderId}!");
+                _logger.LogInformation("Added {Smv} SMVs to operative {OperativePrn} for work order {WorkOrderId}!", npe.Value, data.OperativePrn, data.WorkOrderId);
             }
 
             await _dbSaver.SaveChangesAsync();

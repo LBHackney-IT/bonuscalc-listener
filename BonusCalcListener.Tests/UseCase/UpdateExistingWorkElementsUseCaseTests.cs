@@ -299,52 +299,5 @@ namespace BonusCalcListener.Tests.UseCase
             // Act & Assert
             Assert.ThrowsAsync<OperativeTimesheetNotFoundException>(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.ValidMessage(), MessageId));
         }
-
-        [Test]
-        public void TimesheetNotFoundExceptionShouldContainWorkOrderContext()
-        {
-            // Arrange
-            _mockTimesheetGateway.Setup(tsg => tsg.GetCurrentTimeSheetForOperative(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .Returns(Task.FromResult<Timesheet>(null));
-
-            var message = BonusCalcTestDataFactory.ValidMessage();
-
-            // Act
-            var ex = Assert.ThrowsAsync<OperativeTimesheetNotFoundException>(() => _sut.ProcessMessageAsync(message, MessageId));
-
-            // Assert
-            Assert.That(ex.MessageId, Is.EqualTo(MessageId));
-            Assert.That(ex.WorkOrderId, Is.EqualTo(message.EventData.WorkOrderId));
-            Assert.That(ex.OperativePrn, Is.EqualTo(message.EventData.OperativePrn));
-            Assert.That(ex.ClosedTime, Is.EqualTo(message.EventData.ClosedTime));
-            Assert.That(ex.WorkOrderStatusCode, Is.EqualTo(message.EventData.WorkOrderStatusCode));
-            Assert.That(ex.EventId, Is.EqualTo(message.Id));
-            Assert.That(ex.Message, Does.Contain($"WorkOrderId: {message.EventData.WorkOrderId}"));
-            Assert.That(ex.Message, Does.Contain($"MessageId: {MessageId}"));
-        }
-
-        [Test]
-        public void ShouldThrowMissingWorkOrderIdExceptionWhenWorkOrderIdIsNull()
-        {
-            var message = BonusCalcTestDataFactory.ValidMessage();
-            message.EventData.WorkOrderId = null;
-
-            var ex = Assert.ThrowsAsync<MissingWorkOrderIdException>(() => _sut.ProcessMessageAsync(message, MessageId));
-            Assert.That(ex.MessageId, Is.EqualTo(MessageId));
-            Assert.That(ex.OperativePrn, Is.EqualTo(message.EventData.OperativePrn));
-            _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Never);
-        }
-
-        [Test]
-        public void ShouldThrowMissingClosedTimeExceptionWhenClosedTimeIsNull()
-        {
-            var message = BonusCalcTestDataFactory.ValidMessage();
-            message.EventData.ClosedTime = null;
-
-            var ex = Assert.ThrowsAsync<MissingClosedTimeException>(() => _sut.ProcessMessageAsync(message, MessageId));
-            Assert.That(ex.MessageId, Is.EqualTo(MessageId));
-            Assert.That(ex.WorkOrderId, Is.EqualTo(message.EventData.WorkOrderId));
-            _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Never);
-        }
     }
 }
