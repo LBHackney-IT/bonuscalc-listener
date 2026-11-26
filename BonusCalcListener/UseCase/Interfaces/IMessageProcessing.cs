@@ -5,6 +5,6 @@ namespace BonusCalcListener.UseCase.Interfaces
 {
     public interface IMessageProcessing
     {
-        Task ProcessMessageAsync(EntityEventSns message);
+        Task ProcessMessageAsync(EntityEventSns message, string messageId);
     }
 }

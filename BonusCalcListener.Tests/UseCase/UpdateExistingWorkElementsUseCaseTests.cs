@@ -2,6 +2,7 @@ using BonusCalcListener.Boundary;
 using BonusCalcListener.Domain;
 using BonusCalcListener.Gateway.Interfaces;
 using BonusCalcListener.Infrastructure;
+using BonusCalcListener.Infrastructure.Exceptions;
 using BonusCalcListener.UseCase;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -23,6 +24,7 @@ namespace BonusCalcListener.Tests.UseCase
         private Mock<PayElement> _mockPayElement;
         private Mock<ILogger<UpdateExistingWorkOrderPayElementsUseCase>> _logger;
         //private Mock<IOperativesGateway> _operativesGatewayMock;
+        private const string MessageId = "269698a0-e332-45bd-a13d-665e75d195cb";
 
         [SetUp]
         public void Setup()
@@ -64,7 +66,7 @@ namespace BonusCalcListener.Tests.UseCase
                 .Verifiable();
 
             // Act
-            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.ValidMessage()));
+            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.ValidMessage(), MessageId));
 
             // Assert
             Assert.That(payElements, Contains.Item(_mockPayElement.Object));
@@ -95,7 +97,7 @@ namespace BonusCalcListener.Tests.UseCase
             message.EventData.PaymentType = paymentType;
 
             // Act
-            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(message));
+            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(message, MessageId));
 
             // Assert
             _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Once);
@@ -117,7 +119,7 @@ namespace BonusCalcListener.Tests.UseCase
         //    message.EventData.OperativePrn = payrollNumber;
 
         //    // Act
-        //    Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(message));
+        //    Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(message, MessageId));
 
         //    // Assert
         //    _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Never);
@@ -150,7 +152,7 @@ namespace BonusCalcListener.Tests.UseCase
                 .Verifiable();
 
             // Act
-            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.NoAccessMessage()));
+            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.NoAccessMessage(), MessageId));
 
             // Assert
             Assert.That(payElements, Contains.Item(_mockPayElement.Object));
@@ -177,7 +179,7 @@ namespace BonusCalcListener.Tests.UseCase
                 .Verifiable();
 
             // Act
-            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.CancelledMessage()));
+            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.CancelledMessage(), MessageId));
 
             // Assert
             Assert.That(payElements, Does.Not.Contain(_mockPayElement.Object));
@@ -207,7 +209,7 @@ namespace BonusCalcListener.Tests.UseCase
             message.EventData.PaymentType = PaymentType.CloseToBase;
 
             // Act
-            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(message));
+            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(message, MessageId));
 
             // Assert
             _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Never);
@@ -231,7 +233,7 @@ namespace BonusCalcListener.Tests.UseCase
                 .Verifiable();
 
             // Act
-            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.UnknownMessage()));
+            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.UnknownMessage(), MessageId));
 
             // Assert
             Assert.That(payElements, Does.Not.Contain(_mockPayElement.Object));
@@ -258,7 +260,7 @@ namespace BonusCalcListener.Tests.UseCase
                 .Verifiable();
 
             // Act
-            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.OldMessage()));
+            Assert.DoesNotThrowAsync(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.OldMessage(), MessageId));
 
             // Assert
             Assert.That(payElements, Does.Not.Contain(_mockPayElement.Object));
@@ -278,7 +280,7 @@ namespace BonusCalcListener.Tests.UseCase
                 .Verifiable();
 
             // Act
-            Assert.ThrowsAsync<InvalidOperationException>(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.ValidMessage()));
+            Assert.ThrowsAsync<OperativeTimesheetNotFoundException>(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.ValidMessage(), MessageId));
 
             // Assert
             _mockDbSaver.Verify(db => db.SaveChangesAsync(), Times.Never);
@@ -295,7 +297,7 @@ namespace BonusCalcListener.Tests.UseCase
                 .Verifiable();
 
             // Act & Assert
-            Assert.ThrowsAsync<InvalidOperationException>(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.ValidMessage()));
+            Assert.ThrowsAsync<OperativeTimesheetNotFoundException>(() => _sut.ProcessMessageAsync(BonusCalcTestDataFactory.ValidMessage(), MessageId));
         }
     }
 }

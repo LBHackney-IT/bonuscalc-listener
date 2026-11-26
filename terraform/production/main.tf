@@ -54,6 +54,7 @@ resource "aws_sqs_queue" "repairs_dead_letter_queue" {
   content_based_deduplication = true
   kms_master_key_id           = "alias/housing-production-cmk"
   kms_data_key_reuse_period_seconds = 300
+  message_retention_seconds   = 1209600                               # 14 days, the SQS maximum (default is 4 days, after which failed messages are deleted)
 }
 
 ### This is the queue  which will receive the events published to the topic listed above
@@ -118,7 +119,69 @@ resource "aws_ssm_parameter" "repairs_sqs_queue_arn" {
 module "bonuscalc_listener_cw_dashboard" {
   source                     = "github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/cloudwatch/dashboards/listener-dashboard"
   environment_name           = var.environment_name
-  listener_name              = "bonuscalc-listener"
+  listener_name              = "bonus-calc-listener"
   sqs_queue_name             = aws_sqs_queue.repairs_queue.name
   sqs_dead_letter_queue_name = aws_sqs_queue.repairs_dead_letter_queue.name
+}
+### Alerting for messages that fail processing and land in the dead letter queue
+#
+### Recipients are read from SSM so email addresses are not committed to this repo.
+### The parameter must exist before this is applied: a comma-separated list of email addresses, e.g.
+###   aws ssm put-parameter --name /bonuscalc-listener/production/alarm-email-recipients --type StringList --value "a@example.com,b@example.com"
+### Each recipient receives an AWS confirmation email and must click the link before alerts are delivered.
+#
+data "aws_ssm_parameter" "alarm_email_recipients" {
+  name = "/bonuscalc-listener/production/alarm-email-recipients"
+}
+
+resource "aws_sns_topic" "bonuscalc_listener_alarms" {
+  name = "bonuscalc-listener-production-alarms"
+}
+
+resource "aws_sns_topic_subscription" "bonuscalc_listener_alarms_email" {
+  for_each  = toset([for email in split(",", nonsensitive(data.aws_ssm_parameter.alarm_email_recipients.value)) : trimspace(email)])
+  topic_arn = aws_sns_topic.bonuscalc_listener_alarms.arn
+  protocol  = "email"
+  endpoint  = each.value
+}
+
+### Fires as soon as any message lands in the dead letter queue
+#
+resource "aws_cloudwatch_metric_alarm" "repairs_dlq_messages_visible" {
+  alarm_name          = "bonuscalc-listener-production-dlq-messages-visible"
+  alarm_description   = "Work order events from the repairs API have failed processing and are in ${aws_sqs_queue.repairs_dead_letter_queue.name}. Check the bonus-calc-listener-production logs for the cause (e.g. a missing operative timesheet), fix it, then redrive the DLQ."
+  namespace           = "AWS/SQS"
+  metric_name         = "ApproximateNumberOfMessagesVisible"
+  dimensions = {
+    QueueName = aws_sqs_queue.repairs_dead_letter_queue.name
+  }
+  statistic           = "Maximum"
+  period              = 300
+  evaluation_periods  = 1
+  threshold           = 0
+  comparison_operator = "GreaterThanThreshold"
+  treat_missing_data  = "notBreaching"
+  alarm_actions       = [aws_sns_topic.bonuscalc_listener_alarms.arn]
+  ok_actions          = [aws_sns_topic.bonuscalc_listener_alarms.arn]
+}
+
+### Reminder: the alarm above only notifies when it changes state, so this fires if messages
+### have been left in the dead letter queue for over 2 days (they are deleted after 14)
+#
+resource "aws_cloudwatch_metric_alarm" "repairs_dlq_oldest_message_age" {
+  alarm_name          = "bonuscalc-listener-production-dlq-oldest-message-age"
+  alarm_description   = "Messages have been in ${aws_sqs_queue.repairs_dead_letter_queue.name} for over 2 days. They are permanently deleted after 14 days, so fix the cause and redrive the DLQ."
+  namespace           = "AWS/SQS"
+  metric_name         = "ApproximateAgeOfOldestMessage"
+  dimensions = {
+    QueueName = aws_sqs_queue.repairs_dead_letter_queue.name
+  }
+  statistic           = "Maximum"
+  period              = 300
+  evaluation_periods  = 1
+  threshold           = 172800 # 2 days in seconds
+  comparison_operator = "GreaterThanThreshold"
+  treat_missing_data  = "notBreaching"
+  alarm_actions       = [aws_sns_topic.bonuscalc_listener_alarms.arn]
+  ok_actions          = [aws_sns_topic.bonuscalc_listener_alarms.arn]
 }
