@@ -54,6 +54,7 @@ resource "aws_sqs_queue" "repairs_dead_letter_queue" {
    content_based_deduplication = true
    kms_master_key_id           = "alias/housing-staging-cmk"
    kms_data_key_reuse_period_seconds = 300
+   message_retention_seconds   = 1209600                               # 14 days, the SQS maximum (default is 4 days, after which failed messages are deleted)
 }
 
 ### This is the queue  which will receive the events published to the topic listed above
